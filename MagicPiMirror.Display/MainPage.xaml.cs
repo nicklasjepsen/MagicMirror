@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -37,55 +38,90 @@ namespace SystemOut.MagicPiMirror
         public MainPage()
         {
             this.InitializeComponent();
+            LoadSettings();
+            ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "Notes");
+            ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "Notes");
+            SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "Notes");
+            if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
+            {
+                TimeFormatString = "T";
+            }
+            else
+                TimeFormatString = "t";
+            if (ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, true))
+            {
+                SpecialNote.Visibility = Visibility.Visible;
+            }
+            else
+                SpecialNote.Visibility = Visibility.Collapsed;
+            UpdateListNoteViewVisibility();
             webserverEventProxy = WebServerEventProxy.Instance;
             webserverEventProxy.ValueChanged += WebserverEventProxy_ValueChanged;
             specialDayCalendar = new SpecialDayCalendar();
             _clockTimer = ThreadPoolTimer.CreatePeriodicTimer(_clockTimer_Tick, TimeSpan.FromMilliseconds(1000));
             webServer = new MirrorWebServer();
-            SpecialNote.Text = ApplicationDataController.GetValue(ValueType.SpecialNote, "");
-            SetTimeStampFormat();
+        }
+
+        private void LoadSettings()
+        {
+            var lines = File.ReadAllLines("DefaultSettings.txt");
+            var settings = new Dictionary<string, string>();
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrEmpty(line))
+                    continue;
+                if (line.Contains("[") && line.Contains("]"))
+                {
+                    var key = line.Substring(0, line.IndexOf('['));
+                    var value = line.Substring(line.IndexOf('[') + 1, line.IndexOf(']') - line.IndexOf('['));
+                    settings.Add(key, value);
+                }
+
+                if (settings.ContainsKey(KeyNames.LoadSettingsFromFile))
+                {
+                    if (bool.Parse(settings[KeyNames.LoadSettingsFromFile]))
+                    {
+                        foreach (var setting in settings)
+                        {
+                            ApplicationDataController.SetValue(setting.Key, setting.Value);
+                        }
+                    }
+                }
+            }
         }
 
         private async void WebserverEventProxy_ValueChanged(object sender, ValueChangedEventArg e)
         {
             switch (e.Key)
             {
-                case ValueType.SpecialNote:
+                case KeyNames.SpecialNote:
                     await RunOnDispatch(() =>
                     {
                         SpecialNote.Text = e.Value;
                     });
                     break;
-                case ValueType.ListNote:
+                case KeyNames.ListNote:
                     await RunOnDispatch(() =>
                     {
-                        NotesContent.Text = e.Value;
+                        ListNoteContent.Text = e.Value;
                     });
                     break;
-                case ValueType.SpecialNoteOn:
+                case KeyNames.SpecialNoteOn:
                     await RunOnDispatch(() =>
                     {
-                        SpecialNote.Visibility = ApplicationDataController.GetValue(ValueType.SpecialNoteOn, false) ?
+                        SpecialNote.Visibility = ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, false) ?
                         Visibility.Collapsed :
                         Visibility.Visible;
                     }); break;
-                case ValueType.DebugModeOn:
+                case KeyNames.DebugModeOn:
                     SetTimeStampFormat();
                     break;
-                case ValueType.ListNoteOn:
+                case KeyNames.ListNoteOn:
+                    await RunOnDispatch(UpdateListNoteViewVisibility); break;
+                case KeyNames.ListNoteHeading:
                     await RunOnDispatch(() =>
                     {
-                        NotestHeading.Visibility = ApplicationDataController.GetValue(ValueType.ListNoteOn, false)
-                            ? Visibility.Visible
-                            : Visibility.Collapsed;
-                        NotesContent.Visibility = ApplicationDataController.GetValue(ValueType.ListNoteOn, false)
-                            ? Visibility.Visible
-                            : Visibility.Collapsed;
-                    }); break;
-                case ValueType.ListNoteHeading:
-                    await RunOnDispatch(() =>
-                    {
-                        NotestHeading.Text = e.Value;
+                        ListNoteHeading.Text = e.Value;
                     });
                     break;
                 default:
@@ -93,9 +129,19 @@ namespace SystemOut.MagicPiMirror
             }
         }
 
+        private void UpdateListNoteViewVisibility()
+        {
+            ListNoteHeading.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            ListNoteContent.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
         private async void SetTimeStampFormat()
         {
-            if (ApplicationDataController.GetValue(ValueType.DebugModeOn, false))
+            if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
                 TimeFormatString = "T";
             else TimeFormatString = "t";
             await SetTime();

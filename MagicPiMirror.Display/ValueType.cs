@@ -7,7 +7,7 @@ using Windows.Storage;
 
 namespace SystemOut.MagicPiMirror
 {
-    public class ValueType
+    public class KeyNames
     {
         public const string
             SpecialNote = nameof(SpecialNote),
@@ -15,7 +15,8 @@ namespace SystemOut.MagicPiMirror
             SpecialNoteOn = nameof(SpecialNoteOn),
             DebugModeOn = nameof(DebugModeOn),
             ListNoteOn = nameof(ListNoteOn),
-            ListNoteHeading = nameof(ListNoteHeading);
+            ListNoteHeading = nameof(ListNoteHeading),
+            LoadSettingsFromFile = nameof(LoadSettingsFromFile);
     }
 
     public class ApplicationDataController

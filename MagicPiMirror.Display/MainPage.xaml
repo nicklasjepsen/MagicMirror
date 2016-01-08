@@ -36,8 +36,8 @@
             </StackPanel>
 
             <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
-                <TextBlock Name="NotestHeading" FontSize="50" Text="Husk!" />
-                <TextBlock Name="NotesContent" FontSize="20" Text="Intet i dag :)"/>
+                <TextBlock Name="ListNoteHeading" FontSize="50" Text="Husk!" />
+                <TextBlock Name="ListNoteContent" FontSize="20" Text="Intet i dag :)"/>
             </StackPanel>
         </Grid>
     </Grid>
