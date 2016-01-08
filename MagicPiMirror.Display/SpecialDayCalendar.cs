@@ -55,7 +55,6 @@ namespace MagicPiMirror
             SpecialDayType = type;
             this.name = name;
         }
-
     }
 
     internal enum SpecialDayType
