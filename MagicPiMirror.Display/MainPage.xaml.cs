@@ -30,10 +30,9 @@ namespace SystemOut.MagicPiMirror
     public sealed partial class MainPage : Page
     {
         private readonly SpecialDayCalendar specialDayCalendar;
-        private ThreadPoolTimer _clockTimer = null;
-        private MirrorWebServer webServer;
-        private string TimeFormatString = "t";
-        private WebServerEventProxy webserverEventProxy;
+        private readonly MirrorWebServer webServer;
+        private string timeFormatString;
+        private readonly WebServerEventProxy webserverEventProxy;
 
         public MainPage()
         {
@@ -44,10 +43,10 @@ namespace SystemOut.MagicPiMirror
             SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "Notes");
             if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
             {
-                TimeFormatString = "T";
+                timeFormatString = "T";
             }
             else
-                TimeFormatString = "t";
+                timeFormatString = "t";
             if (ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, true))
             {
                 SpecialNote.Visibility = Visibility.Visible;
@@ -58,7 +57,7 @@ namespace SystemOut.MagicPiMirror
             webserverEventProxy = WebServerEventProxy.Instance;
             webserverEventProxy.ValueChanged += WebserverEventProxy_ValueChanged;
             specialDayCalendar = new SpecialDayCalendar();
-            _clockTimer = ThreadPoolTimer.CreatePeriodicTimer(_clockTimer_Tick, TimeSpan.FromMilliseconds(1000));
+            ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(1000));
             webServer = new MirrorWebServer();
         }
 
@@ -142,12 +141,12 @@ namespace SystemOut.MagicPiMirror
         private async void SetTimeStampFormat()
         {
             if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
-                TimeFormatString = "T";
-            else TimeFormatString = "t";
+                timeFormatString = "T";
+            else timeFormatString = "t";
             await SetTime();
         }
 
-        private async void _clockTimer_Tick(ThreadPoolTimer timer)
+        private async void ClockTimer_Tick(ThreadPoolTimer timer)
         {
             await SetTime();
         }
@@ -164,7 +163,7 @@ namespace SystemOut.MagicPiMirror
         {
             await RunOnDispatch(() =>
             {
-                ClockLabel.Text = DateTime.Now.ToString(TimeFormatString, new CultureInfo("da-dk"));
+                ClockLabel.Text = DateTime.Now.ToString(timeFormatString, new CultureInfo("da-dk"));
             });
         }
 
