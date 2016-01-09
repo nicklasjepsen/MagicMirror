@@ -170,6 +170,9 @@ namespace SystemOut.MagicPiMirror
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await webServer.InitializeWebServer();
+            var weather = new WeatherService();
+            var temp = await weather.GetWeatherData();
+            await RunOnDispatch(() => { SpecialNote.Text = temp + string.Empty; });
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
