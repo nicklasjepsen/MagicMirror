@@ -15,16 +15,49 @@ namespace SystemOut.MagicPiMirror
 
     public class WeatherService
     {
-        public async Task<float> GetWeatherData()
+        public async Task<WeatherData> GetWeatherData()
         {
-            //http://api.openweathermap.org/data/2.5/weather?q={copenhagen}&APPID=5b92e266d1435f9ddac2cc47419c4d9e&units=metric
-            var webClient = new HttpClient();
-            var json = await webClient.GetStringAsync(
-                "http://api.openweathermap.org/data/2.5/weather?q={copenhagen}&APPID=5b92e266d1435f9ddac2cc47419c4d9e&units=metric");
+            // This will always use the most precise method of city look up. If coords are provided we use those,
+            // then city id and lastly city plain text search string.
+            var uri = $"http://api.openweathermap.org/data/2.5/weather?APPID={ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty)}&units=metric&";
+            var coordsString = ApplicationDataController.GetValue(KeyNames.WeatherCityGeoCoordinates, string.Empty);
+            if (!string.IsNullOrEmpty(coordsString))
+            {
+                var lon = coordsString.Split(',')[0];
+                var lat = coordsString.Split(',')[1];
+                uri = $"{uri}lat={lat}&lon={lon}";
+            }
+            else if (!string.IsNullOrEmpty(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty)) &&
+                !string.IsNullOrEmpty(ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty)))
+            {
+                uri = $"{uri}zip={ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty)},{ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty)}";
+            }
+            else if (!string.IsNullOrEmpty(ApplicationDataController.GetValue(KeyNames.WeatherCityId, string.Empty)))
+            {
+                uri = $"{uri}id={ApplicationDataController.GetValue(KeyNames.WeatherCityId, string.Empty)}";
+            }
+            else
+            {
+                uri = $"{uri}q={ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty)}";
+            }
 
+            var webClient = new HttpClient();
+            var json = await webClient.GetStringAsync(uri);
             var jsonObject = JsonConvert.DeserializeObject<Rootobject>(json);
-            return jsonObject.main.temp;
+            return new WeatherData
+            {
+                Description = jsonObject.weather.First().main,
+                Location = jsonObject.name,
+                Temp = jsonObject.main.temp
+            };
         }
+    }
+
+    public class WeatherData
+    {
+        public float Temp { get; set; }
+        public string Description { get; set; }
+        public string Location { get; set; }
     }
 
     public class Rootobject

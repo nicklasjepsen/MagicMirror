@@ -37,23 +37,7 @@ namespace SystemOut.MagicPiMirror
         public MainPage()
         {
             this.InitializeComponent();
-            LoadSettings();
-            ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "Notes");
-            ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "Notes");
-            SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "Notes");
-            if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
-            {
-                timeFormatString = "T";
-            }
-            else
-                timeFormatString = "t";
-            if (ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, true))
-            {
-                SpecialNote.Visibility = Visibility.Visible;
-            }
-            else
-                SpecialNote.Visibility = Visibility.Collapsed;
-            UpdateListNoteViewVisibility();
+            
             webserverEventProxy = WebServerEventProxy.Instance;
             webserverEventProxy.ValueChanged += WebserverEventProxy_ValueChanged;
             specialDayCalendar = new SpecialDayCalendar();
@@ -61,9 +45,12 @@ namespace SystemOut.MagicPiMirror
             webServer = new MirrorWebServer();
         }
 
-        private void LoadSettings()
+        private async Task LoadSettings()
         {
-            var lines = File.ReadAllLines("DefaultSettings.txt");
+            string[] lines = { };
+            if (File.Exists("PrivateSettings.txt"))
+                lines = File.ReadAllLines("PrivateSettings.txt");
+            else File.ReadAllLines("DefaultSettings.txt");
             var settings = new Dictionary<string, string>();
             foreach (var line in lines)
             {
@@ -71,19 +58,20 @@ namespace SystemOut.MagicPiMirror
                     continue;
                 if (line.Contains("[") && line.Contains("]"))
                 {
-                    var key = line.Substring(0, line.IndexOf('['));
-                    var value = line.Substring(line.IndexOf('[') + 1, line.IndexOf(']') - line.IndexOf('['));
+                    var key = line.Substring(0, line.IndexOf('[')).Trim();
+                    var value = line.Substring(line.IndexOf('[') + 1, line.IndexOf(']') - line.IndexOf('[') - 1);
                     settings.Add(key, value);
                 }
 
-                if (settings.ContainsKey(KeyNames.LoadSettingsFromFile))
+            }
+            if (settings.ContainsKey(KeyNames.LoadSettingsFromFile))
+            {
+                if (bool.Parse(settings[KeyNames.LoadSettingsFromFile]))
                 {
-                    if (bool.Parse(settings[KeyNames.LoadSettingsFromFile]))
+                    await ApplicationData.Current.ClearAsync();
+                    foreach (var setting in settings)
                     {
-                        foreach (var setting in settings)
-                        {
-                            ApplicationDataController.SetValue(setting.Key, setting.Value);
-                        }
+                        ApplicationDataController.SetValue(setting.Key, setting.Value);
                     }
                 }
             }
@@ -169,16 +157,37 @@ namespace SystemOut.MagicPiMirror
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            await LoadSettings();
+            ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteHeadning");
+            ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteContent");
+            SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.SpecialNote, "SpecialNote");
+            if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
+            {
+                timeFormatString = "T";
+            }
+            else
+                timeFormatString = "t";
+            if (ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, true))
+            {
+                SpecialNote.Visibility = Visibility.Visible;
+            }
+            else
+                SpecialNote.Visibility = Visibility.Collapsed;
+            UpdateListNoteViewVisibility();
             await webServer.InitializeWebServer();
             var weather = new WeatherService();
             var temp = await weather.GetWeatherData();
-            await RunOnDispatch(() => { SpecialNote.Text = temp + string.Empty; });
+            await RunOnDispatch(() =>
+            {
+                LocationTxb.Text = temp.Location;
+                TemperatureTxb.Text = Math.Round(temp.Temp) + "°";
+                WeatherDescirptionTxb.Text = temp.Description;
+            });
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             ClockLabel.Text = DateTime.Now.ToString("t", new CultureInfo("da-dk"));
-            CalendarHeading.Text = GetDanishDayOfWeek();
 
             var specials = specialDayCalendar.GetSpecials(DateTime.Today);
             if (specials.Any())

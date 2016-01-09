@@ -4,6 +4,11 @@ SpecialNoteOn [True]
 ListNoteHeading [Notes]
 ListNoteContent [Nothing here yet]
 ListNoteOn [False]
+WeatherCityName [Copenhagen]
+WeatherCityId [2618425]
+WeatherZip [2200]
+WeatherCountry [dk]
+WeatherCityGeoCoordinates [12.56553,55.675941]
 
 DebugModeOn [False]
 

@@ -16,7 +16,14 @@ namespace SystemOut.MagicPiMirror
             DebugModeOn = nameof(DebugModeOn),
             ListNoteOn = nameof(ListNoteOn),
             ListNoteHeading = nameof(ListNoteHeading),
-            LoadSettingsFromFile = nameof(LoadSettingsFromFile);
+            LoadSettingsFromFile = nameof(LoadSettingsFromFile),
+            WeatherCityName = nameof(WeatherCityName),
+            WeatherCityId = nameof(WeatherCityId),
+            WeatherZip = nameof(WeatherZip),
+            WeatherCountry = nameof(WeatherCountry),
+            WeatherCityGeoCoordinates = nameof(WeatherCityGeoCoordinates),
+            OpenWeatherMapApiKey = nameof(OpenWeatherMapApiKey);
+
     }
 
     public class ApplicationDataController
@@ -27,10 +34,10 @@ namespace SystemOut.MagicPiMirror
             var value = ApplicationData.Current.LocalSettings.Values[key];
             if (value == null)
                 return defaultValue;
-            if (typeof (T) == typeof (bool))
-                returnVal = bool.Parse((string) value);
+            if (typeof(T) == typeof(bool))
+                returnVal = bool.Parse((string)value);
             else returnVal = value;
-            return (T) returnVal;
+            return (T)returnVal;
         }
 
         public static void SetValue(string key, string value)
