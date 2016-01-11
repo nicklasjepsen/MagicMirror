@@ -16,10 +16,10 @@ namespace SystemOut.MagicPiMirror
     {
         public async Task InitializeWebServer()
         {
-            //var webserver = new RestWebServer(12345, "localhost");
-            //webserver.RegisterController<MirrorWebServer>();
+            var webserver = new RestWebServer(8181);
+            webserver.RegisterController<MirrorWebServer>();
 
-            //await webserver.StartServerAsync();
+            await webserver.StartServerAsync();
         }
 
         [UriFormat("/values/{key}/{value}")]

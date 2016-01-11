@@ -53,7 +53,7 @@ namespace SystemOut.MagicPiMirror
                     WeatherIconUri = new Uri($"http://openweathermap.org/img/w/{jsonObject.weather.First().icon}.png")
                 };
             }
-            catch (Exception)
+            catch (HttpRequestException)
             {
                 return null;
             }
