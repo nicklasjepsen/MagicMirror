@@ -143,7 +143,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\restup\src\WebServer\WebServer.csproj">
+    <ProjectReference Include="..\Externals\Restup\src\WebServer\WebServer.csproj">
       <Project>{837b8ff3-ded6-4dc7-ad58-dbb0b3e44dd4}</Project>
       <Name>WebServer</Name>
     </ProjectReference>
