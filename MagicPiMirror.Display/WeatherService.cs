@@ -4,46 +4,39 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Appointments;
 using Newtonsoft.Json;
 
 namespace SystemOut.MagicPiMirror
 {
-    /// <summary>
-    /// This class uses the OpenWeatherMap to get weather data.
-    /// See: http://openweathermap.org/current
-    /// </summary>
-
-    public class WeatherService
+    public interface IWeatherServiceProvider
     {
-        public async Task<WeatherData> GetWeatherData()
+        Task<WeatherData> ExecuteAsync(string uri);
+    }
+
+    public interface IHttpClient
+    {
+        Task<string> GetStringAsync(string uri);
+    }
+
+    internal class WeatherServiceProvider : IWeatherServiceProvider
+    {
+        private readonly IHttpClient httpClient;
+        public WeatherServiceProvider()
         {
-            // This will always use the most precise method of city look up. If coords are provided we use those,
-            // then city id and lastly city plain text search string.
-            var uri = $"http://api.openweathermap.org/data/2.5/weather?APPID={ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty)}&units=metric&";
-            var coordsString = ApplicationDataController.GetValue(KeyNames.WeatherCityGeoCoordinates, string.Empty);
-            if (!string.IsNullOrEmpty(coordsString))
-            {
-                var lon = coordsString.Split(',')[0];
-                var lat = coordsString.Split(',')[1];
-                uri = $"{uri}lat={lat}&lon={lon}";
-            }
-            else if (!string.IsNullOrEmpty(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty)) &&
-                !string.IsNullOrEmpty(ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty)))
-            {
-                uri = $"{uri}zip={ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty)},{ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty)}";
-            }
-            else if (!string.IsNullOrEmpty(ApplicationDataController.GetValue(KeyNames.WeatherCityId, string.Empty)))
-            {
-                uri = $"{uri}id={ApplicationDataController.GetValue(KeyNames.WeatherCityId, string.Empty)}";
-            }
-            else
-            {
-                uri = $"{uri}q={ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty)}";
-            }
+            httpClient = new HttpClientImp();
+        }
+
+        public WeatherServiceProvider(IHttpClient mock)
+        {
+            httpClient = mock;
+        }
+
+        public async Task<WeatherData> ExecuteAsync(string uri)
+        {
             try
             {
-                var webClient = new HttpClient();
-                var json = await webClient.GetStringAsync(uri);
+                var json = await httpClient.GetStringAsync(uri);
                 var jsonObject = JsonConvert.DeserializeObject<Rootobject>(json);
                 return new WeatherData
                 {
@@ -57,6 +50,64 @@ namespace SystemOut.MagicPiMirror
             {
                 return null;
             }
+        }
+
+        class HttpClientImp : IHttpClient
+        {
+            public async Task<string> GetStringAsync(string uri)
+            {
+                var webClient = new HttpClient();
+                return await webClient.GetStringAsync(uri);
+            }
+        }
+    }
+
+    /// <summary>
+    /// This class uses the OpenWeatherMap to get weather data.
+    /// See: http://openweathermap.org/current
+    /// </summary>
+
+    public class WeatherService
+    {
+        private readonly IWeatherServiceProvider weatherServiceProvider;
+        public string AppId { get; }
+        public string Uri
+        {
+            get
+            {
+                return $"http://api.openweathermap.org/data/2.5/weather?APPID={AppId}&units=metric&";
+            }
+        }
+
+        public WeatherService(string appId)
+        {
+            AppId = appId;
+            weatherServiceProvider = new WeatherServiceProvider();
+        }
+
+        public WeatherService(IHttpClient mock)
+        {
+            AppId = "InvalidAppId";
+            weatherServiceProvider = new WeatherServiceProvider(mock);
+        }
+
+        public async Task<WeatherData> GetWeatherDataForCoordinates(string lon, string lat)
+        {
+            return await weatherServiceProvider.ExecuteAsync($"{Uri}lat={lat}&lon={lon}");
+        }
+        public async Task<WeatherData> GetWeatherDataForCity(string cityName)
+        {
+            return await weatherServiceProvider.ExecuteAsync($"{Uri}q={cityName}");
+        }
+
+        public async Task<WeatherData> GetWeatherDataForCity(string zip, string country)
+        {
+            return await weatherServiceProvider.ExecuteAsync($"{Uri}zip={zip},{country}");
+        }
+
+        public async Task<WeatherData> GetWeatherDataForCityId(string cityId)
+        {
+            return await weatherServiceProvider.ExecuteAsync($"{Uri}id={cityId}");
         }
     }
 
@@ -94,7 +145,8 @@ namespace SystemOut.MagicPiMirror
         public float temp { get; set; }
         public int pressure { get; set; }
         public int humidity { get; set; }
-        public int temp_max { get; set; }
+        public float temp_min { get; set; }
+        public float temp_max { get; set; }
     }
 
     public class Wind

@@ -184,8 +184,8 @@ namespace SystemOut.MagicPiMirror
                 SpecialNote.Visibility = Visibility.Collapsed;
             UpdateListNoteViewVisibility();
             await webServer.InitializeWebServer();
-            var weather = new WeatherService();
-            var weatherData = await weather.GetWeatherData();
+            var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
+            var weatherData = await weather.GetWeatherDataForCity("2100", "dk");
             if (weatherData == null)
             {
                 var messageDialog = new MessageDialog("Unable to connect to the Weather Service.");
