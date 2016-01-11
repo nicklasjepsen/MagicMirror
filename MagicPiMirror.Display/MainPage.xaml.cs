@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -10,7 +11,9 @@ using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.System.Threading;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -18,7 +21,9 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -37,11 +42,11 @@ namespace SystemOut.MagicPiMirror
         public MainPage()
         {
             this.InitializeComponent();
-            
+
             webserverEventProxy = WebServerEventProxy.Instance;
             webserverEventProxy.ValueChanged += WebserverEventProxy_ValueChanged;
             specialDayCalendar = new SpecialDayCalendar();
-            ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(1000));
+            ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(100));
             webServer = new MirrorWebServer();
         }
 
@@ -151,6 +156,8 @@ namespace SystemOut.MagicPiMirror
         {
             await RunOnDispatch(() =>
             {
+                DayTxt.Text = GetDanishDayOfWeek();
+                DateTxb.Text = DateTime.Now.ToString("d. MMMM yyyy", new CultureInfo("da-dk"));
                 ClockLabel.Text = DateTime.Now.ToString(timeFormatString, new CultureInfo("da-dk"));
             });
         }
@@ -158,15 +165,16 @@ namespace SystemOut.MagicPiMirror
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadSettings();
-            ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteHeadning");
-            ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteContent");
-            SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.SpecialNote, "SpecialNote");
             if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
             {
                 timeFormatString = "T";
             }
             else
                 timeFormatString = "t";
+            await SetTime();
+            ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteHeadning");
+            ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteContent");
+            SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.SpecialNote, "SpecialNote");
             if (ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, true))
             {
                 SpecialNote.Visibility = Visibility.Visible;
@@ -179,6 +187,7 @@ namespace SystemOut.MagicPiMirror
             var temp = await weather.GetWeatherData();
             await RunOnDispatch(() =>
             {
+                WeatherIcon.Source = new BitmapImage(temp.WeatherIconUri);
                 LocationTxb.Text = temp.Location;
                 TemperatureTxb.Text = Math.Round(temp.Temp) + "°";
                 WeatherDescirptionTxb.Text = temp.Description;
@@ -187,8 +196,6 @@ namespace SystemOut.MagicPiMirror
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ClockLabel.Text = DateTime.Now.ToString("t", new CultureInfo("da-dk"));
-
             var specials = specialDayCalendar.GetSpecials(DateTime.Today);
             if (specials.Any())
             {

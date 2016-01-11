@@ -32,19 +32,35 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Name="TemperatureTxb" FontSize="90" VerticalAlignment="Top" Margin="0,0,20,0">?°</TextBlock>
-                <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="0,27,0,0">
-                    <TextBlock Name="WeatherDescirptionTxb" FontSize="30" Text="Unknown" />
-                    <TextBlock Name="LocationTxb" FontSize="20" Text="Loading..."/>
+                <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,24,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Height="50" Width="50" Background="White">
+                            <Image Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50"/>
+                        </Border>
+                        <TextBlock Name="WeatherDescirptionTxb" FontSize="35" Text="Unknown" />
+                    </StackPanel> 
+                    <TextBlock Name="LocationTxb" FontSize="24" Text="Loading..."/>
                 </StackPanel>
             </Grid>
 
+            <Grid Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <!--<TextBlock Name="TemperatureTxb" FontSize="90" VerticalAlignment="Top" Margin="0,0,20,0">?°</TextBlock>-->
+                <StackPanel>
+                <TextBlock Name="ClockLabel" TextAlignment="Right" Text="06:50" Foreground="White" FontSize="90"/>
+                    <TextBlock Name="DayTxt" TextAlignment="Right" FontSize="35" Text="DayTxt" />
+                    <TextBlock Name="DateTxb" FontSize="24" TextAlignment="Right" Text="9. January 2016"/>
+                </StackPanel>
+            </Grid>
 
-
-            <TextBlock Grid.Column="2" Grid.Row="0" Name="ClockLabel" TextAlignment="Right" Text="06:50" Foreground="White" FontSize="50"/>
 
             <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
                 <TextBlock Name="SpecialNote" TextAlignment="Center" Text="SpecialNote" FontSize="60"/>

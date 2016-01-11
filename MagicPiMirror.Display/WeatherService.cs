@@ -48,7 +48,8 @@ namespace SystemOut.MagicPiMirror
             {
                 Description = jsonObject.weather.First().main,
                 Location = jsonObject.name,
-                Temp = jsonObject.main.temp
+                Temp = jsonObject.main.temp,
+                WeatherIconUri = new Uri($"http://openweathermap.org/img/w/{jsonObject.weather.First().icon}.png")
             };
         }
     }
@@ -58,6 +59,7 @@ namespace SystemOut.MagicPiMirror
         public float Temp { get; set; }
         public string Description { get; set; }
         public string Location { get; set; }
+        public Uri WeatherIconUri { get; set; }
     }
 
     public class Rootobject
