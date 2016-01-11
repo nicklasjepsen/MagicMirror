@@ -38,98 +38,141 @@ namespace SystemOut.MagicPiMirror
         private readonly SpecialDayCalendar specialDayCalendar;
         private readonly MirrorWebServer webServer;
         private string timeFormatString;
-        private readonly WebServerEventProxy webserverEventProxy;
 
         public MainPage()
         {
             this.InitializeComponent();
 
-            webserverEventProxy = WebServerEventProxy.Instance;
+            var webserverEventProxy = WebServerEventProxy.Instance;
             webserverEventProxy.ValueChanged += WebserverEventProxy_ValueChanged;
             specialDayCalendar = new SpecialDayCalendar();
             ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(100));
             webServer = new MirrorWebServer();
         }
 
-        private async Task LoadSettings()
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            string[] lines = { };
-            if (File.Exists("PrivateSettings.txt"))
-                lines = File.ReadAllLines("PrivateSettings.txt");
-            else lines = File.ReadAllLines("DefaultSettings.txt");
-            var settings = new Dictionary<string, string>();
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrEmpty(line))
-                    continue;
-                if (line.Contains("[") && line.Contains("]"))
-                {
-                    var key = line.Substring(0, line.IndexOf('[')).Trim();
-                    var value = line.Substring(line.IndexOf('[') + 1, line.IndexOf(']') - line.IndexOf('[') - 1);
-                    settings.Add(key, value);
-                }
+#if DEBUG
+            await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("DefaultSettings.txt"));
+#endif
+            SetDebugMode(ApplicationDataController.GetValue(KeyNames.DebugModeOn, false));
 
-            }
-            if (settings.ContainsKey(KeyNames.LoadSettingsFromFile))
+            RefreshUiControls();
+
+            await webServer.InitializeWebServer();
+            var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
+            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+            if (weatherData == null)
             {
-                if (bool.Parse(settings[KeyNames.LoadSettingsFromFile]))
+                var messageDialog = new MessageDialog("Unable to connect to the Weather Service.");
+                await messageDialog.ShowAsync();
+            }
+            else
+            {
+                await RunOnDispatch(() =>
                 {
-                    await ApplicationData.Current.ClearAsync();
-                    foreach (var setting in settings)
-                    {
-                        ApplicationDataController.SetValue(setting.Key, setting.Value);
-                    }
-                }
+                    //WeatherIcon.Source = new BitmapImage(weatherData.WeatherIconUri);
+                    LocationTxb.Text = weatherData.Location;
+                    TemperatureTxb.Text = Math.Round(weatherData.Temp) + "°";
+                    WeatherDescirptionTxb.Text = weatherData.Description;
+                });
             }
         }
+
+        private async void RefreshUiControls()
+        {
+            await SetTime();
+            await RefreshListNoteVisibility();
+            await RefreshListNoteHeading();
+            await RefreshListNote();
+            await RefreshSpecialNote();
+            await RefreshSpecialNoteVisible();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            var specials = specialDayCalendar.GetSpecials(DateTime.Today);
+            if (specials.Any())
+            {
+                SpecialNote.Text = specials.First().DisplayText;
+            }
+
+            base.OnNavigatedTo(e);
+        }
+
+        private void SetDebugMode(bool debugModeOn)
+        {
+            SetTimeStampFormat();
+        }
+
+
 
         private async void WebserverEventProxy_ValueChanged(object sender, ValueChangedEventArg e)
         {
             switch (e.Key)
             {
                 case KeyNames.SpecialNote:
-                    await RunOnDispatch(() =>
-                    {
-                        SpecialNote.Text = e.Value;
-                    });
-                    break;
+                    await RefreshSpecialNote(); break;
                 case KeyNames.ListNote:
-                    await RunOnDispatch(() =>
-                    {
-                        ListNoteContent.Text = e.Value;
-                    });
-                    break;
+                    await RefreshListNote(); break;
                 case KeyNames.SpecialNoteOn:
-                    await RunOnDispatch(() =>
-                    {
-                        SpecialNote.Visibility = ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, false) ?
-                        Visibility.Collapsed :
-                        Visibility.Visible;
-                    }); break;
+                    await RefreshSpecialNoteVisible(); break;
                 case KeyNames.DebugModeOn:
-                    SetTimeStampFormat();
-                    break;
+                    SetTimeStampFormat(); break;
                 case KeyNames.ListNoteOn:
-                    await RunOnDispatch(UpdateListNoteViewVisibility); break;
+                    await RefreshListNoteVisibility(); break;
                 case KeyNames.ListNoteHeading:
-                    await RunOnDispatch(() =>
-                    {
-                        ListNoteHeading.Text = e.Value;
-                    });
-                    break;
+                    await RefreshListNoteHeading(); break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private void UpdateListNoteViewVisibility()
+        private async Task RefreshListNoteHeading()
         {
-            ListNoteHeading.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-            ListNoteContent.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            await RunOnDispatch(() =>
+            {
+                ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, string.Empty);
+            });
+        }
+
+        private async Task RefreshSpecialNoteVisible()
+        {
+            await RunOnDispatch(() =>
+            {
+                SpecialNote.Visibility = ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, false) ?
+                Visibility.Collapsed :
+                Visibility.Visible;
+            });
+        }
+
+        private async Task RefreshListNote()
+        {
+            await RunOnDispatch(() =>
+            {
+                ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNote, string.Empty);
+            });
+        }
+
+        private async Task RefreshSpecialNote()
+        {
+            await RunOnDispatch(() =>
+            {
+                SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.SpecialNote, string.Empty);
+            });
+        }
+
+        private async Task RefreshListNoteVisibility()
+        {
+            await RunOnDispatch(() =>
+            {
+                ListNoteHeading.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+                ListNoteContent.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            });
         }
 
         private async void SetTimeStampFormat()
@@ -161,57 +204,6 @@ namespace SystemOut.MagicPiMirror
                 DateTxb.Text = DateTime.Now.ToString("d. MMMM yyyy", new CultureInfo("da-dk"));
                 ClockLabel.Text = DateTime.Now.ToString(timeFormatString, new CultureInfo("da-dk"));
             });
-        }
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            await LoadSettings();
-            if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
-            {
-                timeFormatString = "T";
-            }
-            else
-                timeFormatString = "t";
-            await SetTime();
-            ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteHeadning");
-            ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, "ListNoteContent");
-            SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.SpecialNote, "SpecialNote");
-            if (ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, true))
-            {
-                SpecialNote.Visibility = Visibility.Visible;
-            }
-            else
-                SpecialNote.Visibility = Visibility.Collapsed;
-            UpdateListNoteViewVisibility();
-            await webServer.InitializeWebServer();
-            var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
-            var weatherData = await weather.GetWeatherDataForCity("2100", "dk");
-            if (weatherData == null)
-            {
-                var messageDialog = new MessageDialog("Unable to connect to the Weather Service.");
-                await messageDialog.ShowAsync();
-            }
-            else
-            {
-                await RunOnDispatch(() =>
-                {
-                    //WeatherIcon.Source = new BitmapImage(weatherData.WeatherIconUri);
-                    LocationTxb.Text = weatherData.Location;
-                    TemperatureTxb.Text = Math.Round(weatherData.Temp) + "°";
-                    WeatherDescirptionTxb.Text = weatherData.Description;
-                });
-            }
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            var specials = specialDayCalendar.GetSpecials(DateTime.Today);
-            if (specials.Any())
-            {
-                SpecialNote.Text = specials.First().DisplayText;
-            }
-
-            base.OnNavigatedTo(e);
         }
 
         private static string GetDanishDayOfWeek()

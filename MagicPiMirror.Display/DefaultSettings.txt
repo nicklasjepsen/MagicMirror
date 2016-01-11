@@ -1,5 +1,4 @@
-﻿LoadSettingsFromFile [True]
-SpecialNote [Hi friend!]
+﻿SpecialNote [Hi friend!]
 SpecialNoteOn [True]
 ListNoteHeading [Notes]
 ListNoteContent [Nothing here yet]
