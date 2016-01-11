@@ -71,13 +71,7 @@ namespace SystemOut.MagicPiMirror
     {
         private readonly IWeatherServiceProvider weatherServiceProvider;
         public string AppId { get; }
-        public string Uri
-        {
-            get
-            {
-                return $"http://api.openweathermap.org/data/2.5/weather?APPID={AppId}&units=metric&";
-            }
-        }
+        public string Uri => $"http://api.openweathermap.org/data/2.5/weather?APPID={AppId}&units=metric&";
 
         public WeatherService(string appId)
         {
