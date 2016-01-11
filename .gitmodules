@@ -1,0 +1,3 @@
+[submodule "Externals/Restup"]
+	path = Externals/Restup
+	url = https://github.com/tomkuijsten/restup.git
