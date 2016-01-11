@@ -41,12 +41,11 @@ namespace SystemOut.MagicPiMirror
 
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             var webserverEventProxy = WebServerEventProxy.Instance;
             webserverEventProxy.ValueChanged += WebserverEventProxy_ValueChanged;
             specialDayCalendar = new SpecialDayCalendar();
-            ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(100));
             webServer = new MirrorWebServer();
         }
 
@@ -55,11 +54,44 @@ namespace SystemOut.MagicPiMirror
 #if DEBUG
             await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("DefaultSettings.txt"));
 #endif
-            SetDebugMode(ApplicationDataController.GetValue(KeyNames.DebugModeOn, false));
-
+            RefreshDebugMode();
             RefreshUiControls();
 
+            StartClock();
             await webServer.InitializeWebServer();
+            await StartWeatherService();
+        }
+
+        private async void RefreshUiControls()
+        {
+            await SetTime();
+            await RefreshSpecialDayView();
+            await RefreshListNoteVisibility();
+            await RefreshListNoteHeading();
+            await RefreshListNote();
+            await RefreshSpecialNote();
+            await RefreshSpecialNoteVisible();
+        }
+
+        private async Task RefreshSpecialDayView()
+        {
+            await RunOnDispatch(() =>
+            {
+                var specials = specialDayCalendar.GetSpecials(DateTime.Today).ToList();
+                if (specials.Any())
+                {
+                    SpecialNote.Text = specials.First().DisplayText;
+                }
+            });
+        }
+
+        private void StartClock()
+        {
+            ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(100));
+        }
+
+        private async Task StartWeatherService()
+        {
             var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
             var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
             if (weatherData == null)
@@ -79,33 +111,10 @@ namespace SystemOut.MagicPiMirror
             }
         }
 
-        private async void RefreshUiControls()
-        {
-            await SetTime();
-            await RefreshListNoteVisibility();
-            await RefreshListNoteHeading();
-            await RefreshListNote();
-            await RefreshSpecialNote();
-            await RefreshSpecialNoteVisible();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            var specials = specialDayCalendar.GetSpecials(DateTime.Today);
-            if (specials.Any())
-            {
-                SpecialNote.Text = specials.First().DisplayText;
-            }
-
-            base.OnNavigatedTo(e);
-        }
-
-        private void SetDebugMode(bool debugModeOn)
+        private void RefreshDebugMode()
         {
             SetTimeStampFormat();
         }
-
-
 
         private async void WebserverEventProxy_ValueChanged(object sender, ValueChangedEventArg e)
         {
