@@ -81,6 +81,8 @@ namespace SystemOut.MagicPiMirror
 
         public WeatherService(string appId)
         {
+            if (string.IsNullOrEmpty(appId))
+                throw new ArgumentException(nameof(appId));
             AppId = appId;
             weatherServiceProvider = new WeatherServiceProvider();
         }

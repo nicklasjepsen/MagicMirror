@@ -56,7 +56,7 @@ namespace SystemOut.MagicPiMirror
             string[] lines = { };
             if (File.Exists("PrivateSettings.txt"))
                 lines = File.ReadAllLines("PrivateSettings.txt");
-            else File.ReadAllLines("DefaultSettings.txt");
+            else lines = File.ReadAllLines("DefaultSettings.txt");
             var settings = new Dictionary<string, string>();
             foreach (var line in lines)
             {
