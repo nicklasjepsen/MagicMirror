@@ -5,9 +5,11 @@ ListNoteContent [Nothing here yet]
 ListNoteOn [False]
 WeatherCityName [Copenhagen]
 WeatherCityId [2618425]
-WeatherZip [2200]
+WeatherZip [2100]
 WeatherCountry [dk]
 WeatherCityGeoCoordinates [12.56553,55.675941]
 OpenWeatherMapApiKey [8b90efe8b26e8df1a2348ee3e24b5b8a]
 DebugModeOn [False]
+
+
 

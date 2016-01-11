@@ -55,14 +55,22 @@ namespace SystemOut.MagicPiMirror
             await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("DefaultSettings.txt"));
 #endif
             RefreshDebugMode();
-            RefreshUiControls();
+            await RefreshUiControls();
 
             StartClock();
             await webServer.InitializeWebServer();
             await StartWeatherService();
+
+            var calendarService =
+                new CalendarService(ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
+            var calendar = await calendarService.GetCalendar(ApplicationDataController.GetValue(KeyNames.OneCalendar, string.Empty));
+            ApplicationDataController.SetValue(KeyNames.SpecialNote, calendar.Appointments.First().Subject);
+            ApplicationDataController.SetValue(KeyNames.SpecialNoteOn, "True");
+            await RefreshSpecialNote();
+            await RefreshSpecialNoteVisible();
         }
 
-        private async void RefreshUiControls()
+        private async Task RefreshUiControls()
         {
             await SetTime();
             await RefreshSpecialDayView();
@@ -93,7 +101,9 @@ namespace SystemOut.MagicPiMirror
         private async Task StartWeatherService()
         {
             var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
-            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+            //var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
+
             if (weatherData == null)
             {
                 var messageDialog = new MessageDialog("Unable to connect to the Weather Service.");
@@ -149,9 +159,9 @@ namespace SystemOut.MagicPiMirror
         {
             await RunOnDispatch(() =>
             {
-                SpecialNote.Visibility = ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, false) ?
-                Visibility.Collapsed :
-                Visibility.Visible;
+                if (ApplicationDataController.GetValue(KeyNames.SpecialNoteOn, false))
+                    SpecialNote.Visibility = Visibility.Visible;
+                else SpecialNote.Visibility = Visibility.Collapsed;
             });
         }
 

@@ -21,7 +21,9 @@ namespace SystemOut.MagicPiMirror
             WeatherZip = nameof(WeatherZip),
             WeatherCountry = nameof(WeatherCountry),
             WeatherCityGeoCoordinates = nameof(WeatherCityGeoCoordinates),
-            OpenWeatherMapApiKey = nameof(OpenWeatherMapApiKey);
+            OpenWeatherMapApiKey = nameof(OpenWeatherMapApiKey),
+            CalendarServiceUrl = nameof(CalendarServiceUrl),
+            OneCalendar = nameof(OneCalendar);
 
     }
 }
