@@ -36,9 +36,9 @@
                 <TextBlock Name="TemperatureTxb" FontSize="90" VerticalAlignment="Top" Margin="0,0,20,0">?°</TextBlock>
                 <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,24,0,0">
                     <StackPanel Orientation="Horizontal">
-                        <Border Height="50" Width="50" Background="White">
+                        <!--<Border Height="50" Width="50" Background="White">
                             <Image Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50"/>
-                        </Border>
+                        </Border>-->
                         <TextBlock Name="WeatherDescirptionTxb" FontSize="35" Text="Unknown" />
                     </StackPanel> 
                     <TextBlock Name="LocationTxb" FontSize="24" Text="Loading..."/>

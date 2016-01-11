@@ -15,6 +15,7 @@ using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -184,14 +185,22 @@ namespace SystemOut.MagicPiMirror
             UpdateListNoteViewVisibility();
             await webServer.InitializeWebServer();
             var weather = new WeatherService();
-            var temp = await weather.GetWeatherData();
-            await RunOnDispatch(() =>
+            var weatherData = await weather.GetWeatherData();
+            if (weatherData == null)
             {
-                WeatherIcon.Source = new BitmapImage(temp.WeatherIconUri);
-                LocationTxb.Text = temp.Location;
-                TemperatureTxb.Text = Math.Round(temp.Temp) + "°";
-                WeatherDescirptionTxb.Text = temp.Description;
-            });
+                var messageDialog = new MessageDialog("Unable to connect to the Weather Service.");
+                await messageDialog.ShowAsync();
+            }
+            else
+            {
+                await RunOnDispatch(() =>
+                {
+                    //WeatherIcon.Source = new BitmapImage(weatherData.WeatherIconUri);
+                    LocationTxb.Text = weatherData.Location;
+                    TemperatureTxb.Text = Math.Round(weatherData.Temp) + "°";
+                    WeatherDescirptionTxb.Text = weatherData.Description;
+                });
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

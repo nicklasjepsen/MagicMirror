@@ -40,17 +40,23 @@ namespace SystemOut.MagicPiMirror
             {
                 uri = $"{uri}q={ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty)}";
             }
-
-            var webClient = new HttpClient();
-            var json = await webClient.GetStringAsync(uri);
-            var jsonObject = JsonConvert.DeserializeObject<Rootobject>(json);
-            return new WeatherData
+            try
             {
-                Description = jsonObject.weather.First().main,
-                Location = jsonObject.name,
-                Temp = jsonObject.main.temp,
-                WeatherIconUri = new Uri($"http://openweathermap.org/img/w/{jsonObject.weather.First().icon}.png")
-            };
+                var webClient = new HttpClient();
+                var json = await webClient.GetStringAsync(uri);
+                var jsonObject = JsonConvert.DeserializeObject<Rootobject>(json);
+                return new WeatherData
+                {
+                    Description = jsonObject.weather.First().main,
+                    Location = jsonObject.name,
+                    Temp = jsonObject.main.temp,
+                    WeatherIconUri = new Uri($"http://openweathermap.org/img/w/{jsonObject.weather.First().icon}.png")
+                };
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 
