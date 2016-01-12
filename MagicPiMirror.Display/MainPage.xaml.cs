@@ -35,6 +35,9 @@ namespace SystemOut.MagicPiMirror
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private const int ClockTickIntervalMs = 100;
+        private const int CalendarTickIntervalMs = 15000;
+        private const int WeatherTickIntervalMs = 30000;
         private readonly SpecialDayCalendar specialDayCalendar;
         private readonly MirrorWebServer webServer;
         private string timeFormatString;
@@ -59,24 +62,74 @@ namespace SystemOut.MagicPiMirror
 
             StartClock();
             await webServer.InitializeWebServer();
-            await StartWeatherService();
+            await RefreshWeatherData();
+            await RefreshCalendar();
+            StartWeatherRefresher();
+            StartCalendarRefresher();
+        }
 
-            var calendarService =
-                new CalendarService(ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
+        private async Task RefreshCalendar()
+        {
+            var calendarService = new CalendarService(
+                ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
             var calendar = await calendarService.GetCalendar(ApplicationDataController.GetValue(KeyNames.OneCalendar, string.Empty));
-            ApplicationDataController.SetValue(KeyNames.SpecialNote, calendar.Appointments.First().Subject);
-            ApplicationDataController.SetValue(KeyNames.SpecialNoteOn, "True");
-            await RefreshSpecialNote();
-            await RefreshSpecialNoteVisible();
+
+            var days = new Dictionary<DateTime, List<Appointment>>();
+            foreach (var appointment in calendar.Appointments)
+            {
+                if (days.ContainsKey(appointment.StartTime.Date))
+                {
+                    days[appointment.StartTime.Date].Add(appointment);
+                }
+                else
+                {
+                    days.Add(appointment.StartTime.Date, new List<Appointment> { appointment });
+                }
+            }
+
+            await RunOnDispatch(() =>
+            {
+                const string calendarPanelName = "CalendarPanel";
+                var element = MainGrid.Children
+                    .OfType<FrameworkElement>()
+                    .FirstOrDefault(e => e.Name == calendarPanelName);
+                if (element != null)
+                    MainGrid.Children.Remove(element);
+
+                var calendarDayStack = new StackPanel
+                {
+                    Name = calendarPanelName
+                };
+                var ordered = days.OrderBy(d => d.Key);
+                foreach (var keyValuePair in ordered)
+                {
+                    var headingLbl = new TextBlock
+                    {
+                        FontSize = 35,
+                        Text = keyValuePair.Key.DayOfWeek.ToString()
+                    };
+                    calendarDayStack.Children.Add(headingLbl);
+                    foreach (var appointment in keyValuePair.Value)
+                    {
+                        var entry = new TextBlock
+                        {
+                            Text =
+                                $"{appointment.StartTime.ToLocalTime().ToString("t", new CultureInfo("da-dk"))} {appointment.Subject}"
+                        };
+                        calendarDayStack.Children.Add(entry);
+                    }
+                }
+                Grid.SetColumn(calendarDayStack, 0);
+                Grid.SetRow(calendarDayStack, 1);
+                Grid.SetRowSpan(calendarDayStack, 2);
+                MainGrid.Children.Add(calendarDayStack);
+            });
         }
 
         private async Task RefreshUiControls()
         {
             await SetTime();
             await RefreshSpecialDayView();
-            await RefreshListNoteVisibility();
-            await RefreshListNoteHeading();
-            await RefreshListNote();
             await RefreshSpecialNote();
             await RefreshSpecialNoteVisible();
         }
@@ -95,10 +148,20 @@ namespace SystemOut.MagicPiMirror
 
         private void StartClock()
         {
-            ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(100));
+            ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(ClockTickIntervalMs));
         }
 
-        private async Task StartWeatherService()
+        private void StartCalendarRefresher()
+        {
+            ThreadPoolTimer.CreatePeriodicTimer(CalendarTimer_Tick, TimeSpan.FromMilliseconds(CalendarTickIntervalMs));
+        }
+
+        private void StartWeatherRefresher()
+        {
+            ThreadPoolTimer.CreatePeriodicTimer(WeatherTimer_Tick, TimeSpan.FromMilliseconds(WeatherTickIntervalMs));
+        }
+
+        private async Task RefreshWeatherData()
         {
             var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
             //var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
@@ -132,28 +195,48 @@ namespace SystemOut.MagicPiMirror
             {
                 case KeyNames.SpecialNote:
                     await RefreshSpecialNote(); break;
-                case KeyNames.ListNote:
-                    await RefreshListNote(); break;
+                //case KeyNames.ListNote:
+                //    await RefreshListNote(); break;
                 case KeyNames.SpecialNoteOn:
                     await RefreshSpecialNoteVisible(); break;
                 case KeyNames.DebugModeOn:
                     SetTimeStampFormat(); break;
-                case KeyNames.ListNoteOn:
-                    await RefreshListNoteVisibility(); break;
-                case KeyNames.ListNoteHeading:
-                    await RefreshListNoteHeading(); break;
+                //case KeyNames.ListNoteOn:
+                //    await RefreshListNoteVisibility(); break;
+                //case KeyNames.ListNoteHeading:
+                //    await RefreshListNoteHeading(); break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private async Task RefreshListNoteHeading()
-        {
-            await RunOnDispatch(() =>
-            {
-                ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, string.Empty);
-            });
-        }
+        //private async Task RefreshListNoteHeading()
+        //{
+        //    await RunOnDispatch(() =>
+        //    {
+        //        ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, string.Empty);
+        //    });
+        //}
+        //private async Task RefreshListNote()
+        //{
+        //    await RunOnDispatch(() =>
+        //    {
+        //        ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNote, string.Empty);
+        //    });
+        //}
+
+        //private async Task RefreshListNoteVisibility()
+        //{
+        //    await RunOnDispatch(() =>
+        //    {
+        //        ListNoteHeading.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
+        //            ? Visibility.Visible
+        //            : Visibility.Collapsed;
+        //        ListNoteContent.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
+        //            ? Visibility.Visible
+        //            : Visibility.Collapsed;
+        //    });
+        //}
 
         private async Task RefreshSpecialNoteVisible()
         {
@@ -165,13 +248,6 @@ namespace SystemOut.MagicPiMirror
             });
         }
 
-        private async Task RefreshListNote()
-        {
-            await RunOnDispatch(() =>
-            {
-                ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNote, string.Empty);
-            });
-        }
 
         private async Task RefreshSpecialNote()
         {
@@ -181,18 +257,7 @@ namespace SystemOut.MagicPiMirror
             });
         }
 
-        private async Task RefreshListNoteVisibility()
-        {
-            await RunOnDispatch(() =>
-            {
-                ListNoteHeading.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
-                ListNoteContent.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
-            });
-        }
+
 
         private async void SetTimeStampFormat()
         {
@@ -202,9 +267,19 @@ namespace SystemOut.MagicPiMirror
             await SetTime();
         }
 
+        private async void CalendarTimer_Tick(ThreadPoolTimer timer)
+        {
+            await RefreshCalendar();
+        }
+
         private async void ClockTimer_Tick(ThreadPoolTimer timer)
         {
             await SetTime();
+        }
+
+        private async void WeatherTimer_Tick(ThreadPoolTimer timer)
+        {
+            await RefreshWeatherData();
         }
 
         private async Task RunOnDispatch(Action a)

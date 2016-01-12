@@ -10,11 +10,8 @@ namespace SystemOut.MagicPiMirror
     {
         public const string
             SpecialNote = nameof(SpecialNote),
-            ListNote = nameof(ListNote),
             SpecialNoteOn = nameof(SpecialNoteOn),
             DebugModeOn = nameof(DebugModeOn),
-            ListNoteOn = nameof(ListNoteOn),
-            ListNoteHeading = nameof(ListNoteHeading),
             LoadSettingsFromFile = nameof(LoadSettingsFromFile),
             WeatherCityName = nameof(WeatherCityName),
             WeatherCityId = nameof(WeatherCityId),
