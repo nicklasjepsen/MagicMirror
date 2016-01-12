@@ -195,48 +195,14 @@ namespace SystemOut.MagicPiMirror
             {
                 case KeyNames.SpecialNote:
                     await RefreshSpecialNote(); break;
-                //case KeyNames.ListNote:
-                //    await RefreshListNote(); break;
                 case KeyNames.SpecialNoteOn:
                     await RefreshSpecialNoteVisible(); break;
                 case KeyNames.DebugModeOn:
                     SetTimeStampFormat(); break;
-                //case KeyNames.ListNoteOn:
-                //    await RefreshListNoteVisibility(); break;
-                //case KeyNames.ListNoteHeading:
-                //    await RefreshListNoteHeading(); break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        //private async Task RefreshListNoteHeading()
-        //{
-        //    await RunOnDispatch(() =>
-        //    {
-        //        ListNoteHeading.Text = ApplicationDataController.GetValue(KeyNames.ListNoteHeading, string.Empty);
-        //    });
-        //}
-        //private async Task RefreshListNote()
-        //{
-        //    await RunOnDispatch(() =>
-        //    {
-        //        ListNoteContent.Text = ApplicationDataController.GetValue(KeyNames.ListNote, string.Empty);
-        //    });
-        //}
-
-        //private async Task RefreshListNoteVisibility()
-        //{
-        //    await RunOnDispatch(() =>
-        //    {
-        //        ListNoteHeading.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
-        //            ? Visibility.Visible
-        //            : Visibility.Collapsed;
-        //        ListNoteContent.Visibility = ApplicationDataController.GetValue(KeyNames.ListNoteOn, false)
-        //            ? Visibility.Visible
-        //            : Visibility.Collapsed;
-        //    });
-        //}
 
         private async Task RefreshSpecialNoteVisible()
         {
