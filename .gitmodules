@@ -2,3 +2,6 @@
 	path = Externals/Restup
 	url = https://github.com/tomkuijsten/restup.git
  	ignore = dirty
+[submodule "Externals/SystemOutWeatherApi"]
+	path = Externals/SystemOutWeatherApi
+	url = https://github.com/nicklasjepsen/SystemOutWeatherApi.git
