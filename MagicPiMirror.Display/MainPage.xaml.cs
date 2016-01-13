@@ -41,7 +41,6 @@ namespace SystemOut.MagicPiMirror
         private const int ClockBlinkyTickInterval = 1000;
         private readonly SpecialDayCalendar specialDayCalendar;
         private readonly MirrorWebServer webServer;
-        private string timeFormatString;
 
         public MainPage()
         {
@@ -58,7 +57,6 @@ namespace SystemOut.MagicPiMirror
 #if DEBUG
             await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("DefaultSettings.txt"));
 #endif
-            RefreshDebugMode();
             await RefreshUiControls();
             StartClockBlinky();
             StartClock();
@@ -206,11 +204,6 @@ namespace SystemOut.MagicPiMirror
             }
         }
 
-        private void RefreshDebugMode()
-        {
-            SetTimeStampFormat();
-        }
-
         private async void WebserverEventProxy_ValueChanged(object sender, ValueChangedEventArg e)
         {
             switch (e.Key)
@@ -219,10 +212,6 @@ namespace SystemOut.MagicPiMirror
                     await RefreshSpecialNote(); break;
                 case KeyNames.SpecialNoteOn:
                     await RefreshSpecialNoteVisible(); break;
-                case KeyNames.DebugModeOn:
-                    SetTimeStampFormat(); break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -243,16 +232,6 @@ namespace SystemOut.MagicPiMirror
             {
                 SpecialNote.Text = ApplicationDataController.GetValue(KeyNames.SpecialNote, string.Empty);
             });
-        }
-
-
-
-        private async void SetTimeStampFormat()
-        {
-            if (ApplicationDataController.GetValue(KeyNames.DebugModeOn, false))
-                timeFormatString = "T";
-            else timeFormatString = "t";
-            await SetTime();
         }
 
         private async void CalendarTimer_Tick(ThreadPoolTimer timer)
