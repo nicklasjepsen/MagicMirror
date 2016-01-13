@@ -75,9 +75,9 @@ namespace SystemOut.MagicPiMirror
         {
             var calendarService = new CalendarService(
                 ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
-            
+
             var allAppointments = new List<Appointment>();
-            foreach (var calendarId in ApplicationDataController.GetValue(KeyNames.CalendarIdentifiers, new string[]{}))
+            foreach (var calendarId in ApplicationDataController.GetValue(KeyNames.CalendarIdentifiers, new string[] { }))
             {
                 var calendar = await calendarService.GetCalendar(calendarId);
                 if (calendar == null)
@@ -193,20 +193,66 @@ namespace SystemOut.MagicPiMirror
 
             if (weatherData == null)
             {
-                var messageDialog = new MessageDialog("Unable to connect to the Weather Service.");
-                await messageDialog.ShowAsync();
+                try
+                {
+                    var messageDialog = new MessageDialog("Unable to connect to the Weather Service.", "Error");
+                    await messageDialog.ShowAsync();
+                }
+                // Windows 10 Core do not support message dialogs (I think, this is thrown on Windows 10 Core)
+                catch (NotImplementedException)
+                {
+                    await RunOnDispatch(() =>
+                    {
+                        WeatherIcon.Source = null;
+                        LocationTxb.Text = "Unable to get weather information.";
+                        TemperatureTxb.Text = "?";
+                        WeatherDescirptionTxb.Text = string.Empty;
+                    });
+                }
             }
             else
             {
                 await RunOnDispatch(() =>
                 {
-                    WeatherIcon.Source = new BitmapImage(weatherData.WeatherIconUri);
-                    WeatherIcon.Source = (ImageSource)Resources["Cloud"];
+                    WeatherIcon.Source = GetImageSourceFromUri(weatherData.WeatherIconUri.AbsolutePath);
                     LocationTxb.Text = weatherData.Location;
                     TemperatureTxb.Text = Math.Round(weatherData.Temp) + "°";
                     WeatherDescirptionTxb.Text = weatherData.Description;
                 });
             }
+        }
+
+        private ImageSource GetImageSourceFromUri(string uri)
+        {
+            // http://openweathermap.org/img/w/01d.png
+            var iconName = uri.Substring(uri.LastIndexOf(@"/", StringComparison.Ordinal) + 1,
+                uri.LastIndexOf(".", StringComparison.Ordinal) - uri.LastIndexOf(@"/", StringComparison.Ordinal) - 1);
+            var resName = string.Empty;
+            switch (iconName)
+            {
+                case "01d": resName = "ClearDay"; break;
+                case "01n": resName = "ClearNight"; break;
+                case "02d": resName = "FewCloudsDay"; break;
+                case "02n": resName = "FewCloudsNight"; break;
+                case "03d": resName = "ScatteredCloudsDay"; break;
+                case "03n": resName = "ScatteredCloudsNight"; break;
+                case "04d": resName = "BrokenCloudsDay"; break;
+                case "04n": resName = "BrokenCloudsNight"; break;
+                case "09d": resName = "RainDay"; break;
+                case "09n": resName = "RainNight"; break;
+                case "10d": resName = "RainDay"; break;
+                case "10n": resName = "RainNight"; break;
+                case "11d": resName = "ThunderStormDay"; break;
+                case "11n": resName = "ThunderStormNight"; break;
+                case "13d": resName = "SnowDay"; break;
+                case "13n": resName = "SnowNight"; break;
+                case "50d": resName = "MistDay"; break;
+                case "50n": resName = "RainNight"; break;
+            }
+
+            if (string.IsNullOrEmpty(resName))
+                return null;
+            return (ImageSource)Resources[resName];
         }
 
         private async void WebserverEventProxy_ValueChanged(object sender, ValueChangedEventArg e)

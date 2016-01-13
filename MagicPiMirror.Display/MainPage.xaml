@@ -22,6 +22,8 @@
         <BitmapImage x:Key="ScatteredCloudsNight" UriSource="Assets/Weather/scattered_clouds_n.png"/>
         <BitmapImage x:Key="SnowDay" UriSource="Assets/Weather/snow_d.png"/>
         <BitmapImage x:Key="SnowNight" UriSource="Assets/Weather/snow_n.png"/>
+        <BitmapImage x:Key="ThunderStormDay" UriSource="Assets/Weather/thunderstorm_d.png"/>
+        <BitmapImage x:Key="ThunderStormNight" UriSource="Assets/Weather/thunderstorm_n.png"/>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="White"/>
         </Style>
@@ -48,10 +50,9 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <TextBlock Name="TemperatureTxb" FontSize="90" VerticalAlignment="Top" Margin="0,0,20,0">?°</TextBlock>
-                <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,24,0,0">
+                <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,20,0,0">
                     <StackPanel Orientation="Horizontal">
-                        <Image Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50"/>
-
+                        <Image Margin="0,0,10,0" Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50"/>
                         <TextBlock Name="WeatherDescirptionTxb" FontSize="35" Text="Unknown" />
                     </StackPanel>
                     <TextBlock Name="LocationTxb" FontSize="24" Text="Loading..."/>

@@ -143,8 +143,8 @@ namespace SystemOut.MagicPiMirror
     public class Main
     {
         public float temp { get; set; }
-        public int pressure { get; set; }
-        public int humidity { get; set; }
+        public float pressure { get; set; }
+        public float humidity { get; set; }
         public float temp_min { get; set; }
         public float temp_max { get; set; }
     }
@@ -152,7 +152,7 @@ namespace SystemOut.MagicPiMirror
     public class Wind
     {
         public float speed { get; set; }
-        public int deg { get; set; }
+        public float deg { get; set; }
     }
 
     public class Clouds
@@ -162,7 +162,7 @@ namespace SystemOut.MagicPiMirror
 
     public class Rain
     {
-        public int volume { get; set; }
+        public float volume { get; set; }
     }
 
     public class Sys
