@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{323228B1-D69A-44A1-AC7C-4FA6F07F178F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemOutWeatherApi.Core", "Externals\SystemOutWeatherApi\SystemOutWeatherApi.Core\SystemOutWeatherApi.Core.csproj", "{2FAB59C0-755F-41F5-B603-630B283B78DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,11 +81,28 @@ Global
 		{323228B1-D69A-44A1-AC7C-4FA6F07F178F}.Release|x86.ActiveCfg = Release|x86
 		{323228B1-D69A-44A1-AC7C-4FA6F07F178F}.Release|x86.Build.0 = Release|x86
 		{323228B1-D69A-44A1-AC7C-4FA6F07F178F}.Release|x86.Deploy.0 = Release|x86
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|ARM.Build.0 = Debug|ARM
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|x64.ActiveCfg = Debug|x64
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|x64.Build.0 = Debug|x64
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|x86.ActiveCfg = Debug|x86
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Debug|x86.Build.0 = Debug|x86
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|ARM.ActiveCfg = Release|ARM
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|ARM.Build.0 = Release|ARM
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|x64.ActiveCfg = Release|x64
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|x64.Build.0 = Release|x64
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|x86.ActiveCfg = Release|x86
+		{2FAB59C0-755F-41F5-B603-630B283B78DA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{837B8FF3-DED6-4DC7-AD58-DBB0B3E44DD4} = {E8E999B0-2C7C-44D7-8492-EB6A05BF44C2}
+		{2FAB59C0-755F-41F5-B603-630B283B78DA} = {E8E999B0-2C7C-44D7-8492-EB6A05BF44C2}
 	EndGlobalSection
 EndGlobal
