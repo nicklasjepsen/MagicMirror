@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using SystemOut.WeatherApi.Core;
 using Windows.ApplicationModel.Background;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;

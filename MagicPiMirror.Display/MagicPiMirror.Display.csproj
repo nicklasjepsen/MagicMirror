@@ -164,6 +164,10 @@
       <Project>{837b8ff3-ded6-4dc7-ad58-dbb0b3e44dd4}</Project>
       <Name>WebServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Externals\SystemOutWeatherApi\SystemOutWeatherApi.Core\SystemOutWeatherApi.Core.csproj">
+      <Project>{2FAB59C0-755F-41F5-B603-630B283B78DA}</Project>
+      <Name>SystemOutWeatherApi.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

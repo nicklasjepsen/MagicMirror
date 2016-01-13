@@ -125,12 +125,6 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MagicPiMirror.Display\MagicPiMirror.Display.csproj">
-      <Project>{1536f6b1-e487-47ab-b736-8ddb1f6c1488}</Project>
-      <Name>MagicPiMirror.Display</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
