@@ -117,7 +117,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\1452184201_sun.png" />
-    <Content Include="Assets\cloud.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\Weather\broken_clouds_d.png" />
     <Content Include="Assets\Weather\broken_clouds_n.png" />
@@ -152,11 +151,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Content Include="Assets\1452697226_cloud-weather-forecast-cloudy-glyph-white.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
