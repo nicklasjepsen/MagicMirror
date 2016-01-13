@@ -15,6 +15,8 @@ namespace SystemOut.MagicPiMirror
                 return defaultValue;
             if (typeof(T) == typeof(bool))
                 returnVal = bool.Parse((string)value);
+            else if (typeof (T) == typeof (string[]))
+                returnVal = ((string) value).Split(',');
             else returnVal = value;
             return (T)returnVal;
         }

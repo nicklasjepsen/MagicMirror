@@ -73,10 +73,16 @@ namespace SystemOut.MagicPiMirror
         {
             var calendarService = new CalendarService(
                 ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
-            var calendar = await calendarService.GetCalendar("F50773D8-6897-46B6-AF35-BD8219296161");
-            var calendar2 = await calendarService.GetCalendar("B24537F6-D86F-4384-A6F8-82D3F56015EF");
-            List<Appointment> allAppointments = calendar.Appointments.ToList();
-            allAppointments.AddRange(calendar2.Appointments);
+            
+            var allAppointments = new List<Appointment>();
+            foreach (var calendarId in ApplicationDataController.GetValue(KeyNames.CalendarIdentifiers, new string[]{}))
+            {
+                var calendar = await calendarService.GetCalendar(calendarId);
+                if (calendar == null)
+                    continue;
+                allAppointments.AddRange(calendar.Appointments);
+            }
+
             var days = new Dictionary<DateTime, List<Appointment>>();
             foreach (var appointment in allAppointments)
             {

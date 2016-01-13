@@ -38,9 +38,12 @@ namespace SystemOut.MagicPiMirror
             {
                 var json = await httpClient.GetStringAsync(uri);
                 var jsonObject = JsonConvert.DeserializeObject<Rootobject>(json);
+                var weatherString = jsonObject.weather.First().description;
+                if (string.IsNullOrEmpty(weatherString))
+                    weatherString = jsonObject.weather.First().main;
                 return new WeatherData
                 {
-                    Description = jsonObject.weather.First().main,
+                    Description = weatherString,
                     Location = jsonObject.name,
                     Temp = jsonObject.main.temp,
                     WeatherIconUri = new Uri($"http://openweathermap.org/img/w/{jsonObject.weather.First().icon}.png")
