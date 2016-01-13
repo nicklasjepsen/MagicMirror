@@ -36,8 +36,9 @@ namespace SystemOut.MagicPiMirror
     public sealed partial class MainPage : Page
     {
         private const int ClockTickIntervalMs = 100;
-        private const int CalendarTickIntervalMs = 15000;
+        private const int CalendarTickIntervalMs = 180000;
         private const int WeatherTickIntervalMs = 30000;
+        private const int ClockBlinkyTickInterval = 1000;
         private readonly SpecialDayCalendar specialDayCalendar;
         private readonly MirrorWebServer webServer;
         private string timeFormatString;
@@ -59,7 +60,7 @@ namespace SystemOut.MagicPiMirror
 #endif
             RefreshDebugMode();
             await RefreshUiControls();
-
+            StartClockBlinky();
             StartClock();
             await webServer.InitializeWebServer();
             await RefreshWeatherData();
@@ -72,10 +73,12 @@ namespace SystemOut.MagicPiMirror
         {
             var calendarService = new CalendarService(
                 ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
-            var calendar = await calendarService.GetCalendar(ApplicationDataController.GetValue(KeyNames.OneCalendar, string.Empty));
-
+            var calendar = await calendarService.GetCalendar("F50773D8-6897-46B6-AF35-BD8219296161");
+            var calendar2 = await calendarService.GetCalendar("B24537F6-D86F-4384-A6F8-82D3F56015EF");
+            List<Appointment> allAppointments = calendar.Appointments.ToList();
+            allAppointments.AddRange(calendar2.Appointments);
             var days = new Dictionary<DateTime, List<Appointment>>();
-            foreach (var appointment in calendar.Appointments)
+            foreach (var appointment in allAppointments)
             {
                 if (days.ContainsKey(appointment.StartTime.Date))
                 {
@@ -103,16 +106,24 @@ namespace SystemOut.MagicPiMirror
                 var ordered = days.OrderBy(d => d.Key);
                 foreach (var keyValuePair in ordered)
                 {
+                    var day = keyValuePair.Key.DayOfWeek.ToString().ToLower();
+                    if (keyValuePair.Key.DayOfYear == DateTime.Now.DayOfYear)
+                        day = "today";
+                    else if (keyValuePair.Key.DayOfYear == DateTime.Now.DayOfYear + 1)
+                        day = "tomorrow";
+
                     var headingLbl = new TextBlock
                     {
-                        FontSize = 35,
-                        Text = keyValuePair.Key.DayOfWeek.ToString()
+                        FontSize = 16,
+                        Text = day
                     };
                     calendarDayStack.Children.Add(headingLbl);
                     foreach (var appointment in keyValuePair.Value)
                     {
                         var entry = new TextBlock
                         {
+                            TextTrimming = TextTrimming.WordEllipsis,
+                            FontSize = 24,
                             Text =
                                 $"{appointment.StartTime.ToLocalTime().ToString("t", new CultureInfo("da-dk"))} {appointment.Subject}"
                         };
@@ -159,6 +170,11 @@ namespace SystemOut.MagicPiMirror
         private void StartWeatherRefresher()
         {
             ThreadPoolTimer.CreatePeriodicTimer(WeatherTimer_Tick, TimeSpan.FromMilliseconds(WeatherTickIntervalMs));
+        }
+
+        private void StartClockBlinky()
+        {
+            ThreadPoolTimer.CreatePeriodicTimer(ClockBlinky_Tick, TimeSpan.FromMilliseconds(ClockBlinkyTickInterval));
         }
 
         private async Task RefreshWeatherData()
@@ -248,6 +264,21 @@ namespace SystemOut.MagicPiMirror
             await RefreshWeatherData();
         }
 
+        private async void ClockBlinky_Tick(ThreadPoolTimer timer)
+        {
+            await ToggleClockBlinky();
+        }
+
+        private async Task ToggleClockBlinky()
+        {
+            await RunOnDispatch(() =>
+            {
+                if (string.IsNullOrEmpty(ClockSeperatorLabel.Text))
+                    ClockSeperatorLabel.Text = ":";
+                else ClockSeperatorLabel.Text = "";
+            });
+        }
+
         private async Task RunOnDispatch(Action a)
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -262,7 +293,9 @@ namespace SystemOut.MagicPiMirror
             {
                 DayTxt.Text = GetDanishDayOfWeek();
                 DateTxb.Text = DateTime.Now.ToString("d. MMMM yyyy", new CultureInfo("da-dk"));
-                ClockLabel.Text = DateTime.Now.ToString(timeFormatString, new CultureInfo("da-dk"));
+                //var timeString = DateTime.Now.ToString(timeFormatString, new CultureInfo("da-dk"));
+                ClockHoursLabel.Text = DateTime.Now.ToString("HH");
+                ClockMinutesLabel.Text = DateTime.Now.ToString("mm");
             });
         }
 

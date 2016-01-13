@@ -279,4 +279,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-/MagicPiMirror.Display/PrivateSettings.txt
+/MagicPiMirror.Display/DefaultSettings.txt

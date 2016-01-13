@@ -40,7 +40,7 @@
                             <Image Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50"/>
                         </Border>-->
                         <TextBlock Name="WeatherDescirptionTxb" FontSize="35" Text="Unknown" />
-                    </StackPanel> 
+                    </StackPanel>
                     <TextBlock Name="LocationTxb" FontSize="24" Text="Loading..."/>
                 </StackPanel>
             </Grid>
@@ -55,7 +55,11 @@
                 </Grid.RowDefinitions>
                 <!--<TextBlock Name="TemperatureTxb" FontSize="90" VerticalAlignment="Top" Margin="0,0,20,0">?°</TextBlock>-->
                 <StackPanel>
-                <TextBlock Name="ClockLabel" TextAlignment="Right" Text="06:50" Foreground="White" FontSize="90"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Name="ClockHoursLabel" TextAlignment="Right" Text="06" Foreground="White" FontSize="90"/>
+                        <TextBlock Name="ClockSeperatorLabel" Width="25" TextAlignment="Center" Text=":" Foreground="White" FontSize="90"/>
+                        <TextBlock Name="ClockMinutesLabel" TextAlignment="Right" Text="50" Foreground="White" FontSize="90"/>
+                    </StackPanel>
                     <TextBlock Name="DayTxt" TextAlignment="Right" FontSize="35" Text="DayTxt" />
                     <TextBlock Name="DateTxb" FontSize="24" TextAlignment="Right" Text="9. January 2016"/>
                 </StackPanel>
