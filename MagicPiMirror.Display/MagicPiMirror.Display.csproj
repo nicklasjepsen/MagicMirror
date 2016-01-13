@@ -99,6 +99,7 @@
     </Compile>
     <Compile Include="ApplicationDataController.cs" />
     <Compile Include="CalendarService.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="LocationService.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -116,7 +117,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\1452184201_sun.png" />
+    <Content Include="Assets\cloud.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\Weather\broken_clouds_d.png" />
+    <Content Include="Assets\Weather\broken_clouds_n.png" />
+    <Content Include="Assets\Weather\clear_d.png" />
+    <Content Include="Assets\Weather\clear_n.png" />
+    <Content Include="Assets\Weather\few_clouds_d.png" />
+    <Content Include="Assets\Weather\few_clouds_n.png" />
+    <Content Include="Assets\Weather\mist_d.png" />
+    <Content Include="Assets\Weather\mist_n.png" />
+    <Content Include="Assets\Weather\rain_d.png" />
+    <Content Include="Assets\Weather\rain_n.png" />
+    <Content Include="Assets\Weather\scattered_clouds_d.png" />
+    <Content Include="Assets\Weather\scattered_clouds_n.png" />
+    <Content Include="Assets\Weather\snow_d.png" />
+    <Content Include="Assets\Weather\snow_n.png" />
+    <Content Include="Assets\Weather\thunderstorm_d.png" />
+    <Content Include="Assets\Weather\thunderstorm_n.png" />
     <Content Include="DefaultSettings.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -134,6 +152,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Content Include="Assets\1452697226_cloud-weather-forecast-cloudy-glyph-white.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

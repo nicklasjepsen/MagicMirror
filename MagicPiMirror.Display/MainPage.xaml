@@ -8,6 +8,20 @@
     mc:Ignorable="d"
     Loaded="Page_Loaded">
     <Page.Resources>
+        <BitmapImage x:Key="BrokenCloudsDay" UriSource="Assets/Weather/broken_clouds_d.png"/>
+        <BitmapImage x:Key="BrokenCloudsNight" UriSource="Assets/Weather/broken_clouds_n.png"/>
+        <BitmapImage x:Key="ClearDay" UriSource="Assets/Weather/clear_d.png"/>
+        <BitmapImage x:Key="ClearNight" UriSource="Assets/Weather/clear_n.png"/>
+        <BitmapImage x:Key="FewCloudsDay" UriSource="Assets/Weather/few_clouds_d.png"/>
+        <BitmapImage x:Key="FewCloudsNight" UriSource="Assets/Weather/few_clouds_n.png"/>
+        <BitmapImage x:Key="MistDay" UriSource="Assets/Weather/mist_d.png"/>
+        <BitmapImage x:Key="MistNight" UriSource="Assets/Weather/mist_n.png"/>
+        <BitmapImage x:Key="RainDay" UriSource="Assets/Weather/rain_d.png"/>
+        <BitmapImage x:Key="RainNight" UriSource="Assets/Weather/rain_n.png"/>
+        <BitmapImage x:Key="ScatteredCloudsDay" UriSource="Assets/Weather/scattered_clouds_d.png"/>
+        <BitmapImage x:Key="ScatteredCloudsNight" UriSource="Assets/Weather/scattered_clouds_n.png"/>
+        <BitmapImage x:Key="SnowDay" UriSource="Assets/Weather/snow_d.png"/>
+        <BitmapImage x:Key="SnowNight" UriSource="Assets/Weather/snow_n.png"/>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="White"/>
         </Style>
@@ -36,9 +50,8 @@
                 <TextBlock Name="TemperatureTxb" FontSize="90" VerticalAlignment="Top" Margin="0,0,20,0">?°</TextBlock>
                 <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,24,0,0">
                     <StackPanel Orientation="Horizontal">
-                        <!--<Border Height="50" Width="50" Background="White">
-                            <Image Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50"/>
-                        </Border>-->
+                        <Image Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="50"/>
+
                         <TextBlock Name="WeatherDescirptionTxb" FontSize="35" Text="Unknown" />
                     </StackPanel>
                     <TextBlock Name="LocationTxb" FontSize="24" Text="Loading..."/>
@@ -72,6 +85,7 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="1"  Name="SpecialNote" TextAlignment="Center" Text="SpecialNote" FontSize="60"/>
+
             </Grid>
 
             <!--<StackPanel Grid.Column="0" Grid.Row="1">

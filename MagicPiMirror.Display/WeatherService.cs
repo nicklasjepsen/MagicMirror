@@ -41,9 +41,10 @@ namespace SystemOut.MagicPiMirror
                 var weatherString = jsonObject.weather.First().description;
                 if (string.IsNullOrEmpty(weatherString))
                     weatherString = jsonObject.weather.First().main;
+                
                 return new WeatherData
                 {
-                    Description = weatherString,
+                    Description = weatherString.FirstCharToUpper(),
                     Location = jsonObject.name,
                     Temp = jsonObject.main.temp,
                     WeatherIconUri = new Uri($"http://openweathermap.org/img/w/{jsonObject.weather.First().icon}.png")

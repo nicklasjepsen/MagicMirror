@@ -200,7 +200,8 @@ namespace SystemOut.MagicPiMirror
             {
                 await RunOnDispatch(() =>
                 {
-                    //WeatherIcon.Source = new BitmapImage(weatherData.WeatherIconUri);
+                    WeatherIcon.Source = new BitmapImage(weatherData.WeatherIconUri);
+                    WeatherIcon.Source = (ImageSource)Resources["Cloud"];
                     LocationTxb.Text = weatherData.Location;
                     TemperatureTxb.Text = Math.Round(weatherData.Temp) + "°";
                     WeatherDescirptionTxb.Text = weatherData.Description;
