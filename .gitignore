@@ -280,3 +280,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 /MagicPiMirror.Display/DefaultSettings.txt
+/MagicPiMirror.Display/Assets/BackgroundImg.jpg
