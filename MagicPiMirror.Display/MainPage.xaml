@@ -89,6 +89,30 @@
         <!--SpecialNote-->
         <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="3" Name="SpecialNote" VerticalAlignment="Center" TextAlignment="Center" Text="SpecialNote" FontSize="60"/>
 
+        <!--Todays Agenda Grid-->
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0" Name="Day0Txb" Style="{StaticResource CalendarHeadingStyle}">Today's Agenda</TextBlock>
+
+            <StackPanel Grid.Column="0" Grid.Row="1" Name="Day0Sp" Orientation="Vertical">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Style="{StaticResource AppointmentHourStyle}">09:00</TextBlock>
+                    <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Style="{StaticResource ExtraSmallTextStyle}">19:00</TextBlock>
+                    <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+        </Grid>
+
         <!--Calendar Grid-->
         <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
             <Grid.RowDefinitions>

@@ -113,63 +113,67 @@ namespace SystemOut.MagicPiMirror
 
             await RunOnDispatch(() =>
             {
-                var appointmentHourStyle = (Style) Resources["AppointmentHourStyle"];
-                var appointmentEntryStyle = (Style) Resources["AppointmentEntryStyle"];
+                var appointmentHourStyle = (Style)Resources["AppointmentHourStyle"];
+                var appointmentEntryStyle = (Style)Resources["AppointmentEntryStyle"];
                 for (var i = 0; i < days.Count; i++)
                 {
                     var currentDay = DateTime.Today.AddDays(i);
                     var appointmentsForCurrentDay = days[currentDay];
-                    if (i == 0)
-                    {
-                        // Today is treated special - we show todays schedule in the upper left side of the screen
+                    //if (i == 0)
+                    //{
+                    //    // Today is treated special - we show todays schedule in the upper left side of the screen
 
+                    //}
+                    //else
+                    //{
+                    var heading = (TextBlock)FindName($"Day{i}Txb");
+                    if (heading == null)
+                    {
+                        Debug.WriteLine("Unable to find the heading textblock for the date " + currentDay);
                     }
                     else
                     {
-                        var heading = (TextBlock)FindName($"Day{i}Txb");
-                        if (heading == null)
-                        {
-                            Debug.WriteLine("Unable to find the heading textblock for the date " + currentDay);
-                        }
+                        if (currentDay.Date == DateTime.Today)
+                            heading.Text = "today's agenda";
+                        else if (currentDay.Date == DateTime.Today.AddDays(1))
+                            heading.Text = "tomorrow";
                         else
-                        {
-                            heading.Text = currentDay.DayOfWeek.ToString().ToLower();
-                        }
+                            heading.Text = GetDanishDayOfWeek(currentDay.DayOfWeek).ToLower();
+                    }
 
-                        // Set appointments
-                        var daySp = (StackPanel)FindName($"Day{i}Sp");
-                        if (daySp == null)
+                    // Set appointments
+                    var daySp = (StackPanel)FindName($"Day{i}Sp");
+                    if (daySp == null)
+                    {
+                        Debug.WriteLine("Unable to find the calendar stack panel for the date " + currentDay);
+                    }
+                    else
+                    {
+                        daySp.Children.Clear();
+                        foreach (var appointmentGrouping in appointmentsForCurrentDay
+                            .GroupBy(a => a.StartTime.ToLocalTime().ToString("HH", new CultureInfo("da-dk")))
+                            .OrderBy(ag => ag.Key))
                         {
-                            Debug.WriteLine("Unable to find the calendar stack panel for the date " + currentDay);
-                        }
-                        else
-                        {
-                            daySp.Children.Clear();
-                            foreach (var appointmentGrouping in appointmentsForCurrentDay
-                                .GroupBy(a => a.StartTime.ToLocalTime().ToString("HH", new CultureInfo("da-dk")))
-                                .OrderBy(ag => ag.Key))
+                            // Group by hour
+                            var hourSp = new StackPanel();
+                            hourSp.Children.Add(new TextBlock
                             {
-                                // Group by hour
-                                var hourSp = new StackPanel();
-                                hourSp.Children.Add(new TextBlock
-                                {
-                                    Style = appointmentHourStyle,
-                                    Text = appointmentGrouping.Key + ":00",
-                                });
+                                Style = appointmentHourStyle,
+                                Text = appointmentGrouping.Key + ":00",
+                            });
 
-                                foreach (var appointment in appointmentGrouping)
+                            foreach (var appointment in appointmentGrouping)
+                            {
+                                var entry = new TextBlock
                                 {
-                                    var entry = new TextBlock
-                                    {
-                                        TextTrimming = TextTrimming.WordEllipsis,
-                                        Style = appointmentEntryStyle,
-                                        Text =appointment.Subject
-                                    };
-                                    hourSp.Children.Add(entry);
-                                }
-
-                                daySp.Children.Add(hourSp);
+                                    TextTrimming = TextTrimming.WordEllipsis,
+                                    Style = appointmentEntryStyle,
+                                    Text = appointment.Subject
+                                };
+                                hourSp.Children.Add(entry);
                             }
+
+                            daySp.Children.Add(hourSp);
                         }
                     }
                 }
@@ -367,8 +371,13 @@ namespace SystemOut.MagicPiMirror
 
         private static string GetDanishDayOfWeek()
         {
+            return GetDanishDayOfWeek(DateTime.Today.DayOfWeek);
+        }
+
+        private static string GetDanishDayOfWeek(DayOfWeek dayOfWeek)
+        {
             // TODO: Add localization support
-            switch (DateTime.Now.DayOfWeek)
+            switch (dayOfWeek)
             {
                 case DayOfWeek.Friday:
                     return "Fredag";
