@@ -70,7 +70,7 @@
                 <Image Source="Assets/Weather/snow_d.png" Margin="10,0,0,15" Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="76" Height="76"/>
             </StackPanel>
             <StackPanel Margin="0,0,0,0">
-                <TextBlock Name="WeatherDescirptionTxb" FontSize="35" Text="Unknown" />
+                <TextBlock Name="WeatherDescirptionTxb" Style="{StaticResource MediumTextStyle}" Text="Unknown" />
                 <TextBlock Name="LocationTxb" Style="{StaticResource SmallTextStyle}" Text="Loading..."/>
             </StackPanel>
         </StackPanel>

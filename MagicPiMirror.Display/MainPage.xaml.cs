@@ -282,7 +282,7 @@ namespace SystemOut.MagicPiMirror
                 case "13d": resName = "SnowDay"; break;
                 case "13n": resName = "SnowNight"; break;
                 case "50d": resName = "MistDay"; break;
-                case "50n": resName = "RainNight"; break;
+                case "50n": resName = "MistNight"; break;
             }
 
             if (string.IsNullOrEmpty(resName))
