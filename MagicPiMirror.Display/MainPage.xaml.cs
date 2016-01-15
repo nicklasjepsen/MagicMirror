@@ -49,8 +49,15 @@ namespace SystemOut.MagicPiMirror
             InitializeComponent();
 
             // Toggle background pic on/off
-            //ParentGrid.Background = new SolidColorBrush(Colors.Black);
-            ParentGrid.Background = new ImageBrush {ImageSource = (ImageSource) Resources["BackgroundImg"] };
+#if ARM
+            ParentGrid.Background = new ImageBrush
+            {
+                ImageSource = (ImageSource)Resources["BackgroundImg"],
+                Stretch = Stretch.None,
+            };
+#else
+            ParentGrid.Background = new SolidColorBrush(Colors.Black);
+#endif
 
             // Set all design time text entries to nothing
             TemperatureTxb.Text = string.Empty;
@@ -141,13 +148,6 @@ namespace SystemOut.MagicPiMirror
                 {
                     var currentDay = DateTime.Today.AddDays(i);
                     var appointmentsForCurrentDay = days[currentDay];
-                    //if (i == 0)
-                    //{
-                    //    // Today is treated special - we show todays schedule in the upper left side of the screen
-
-                    //}
-                    //else
-                    //{
                     var heading = (TextBlock)FindName($"Day{i}Txb");
                     if (heading == null)
                     {
@@ -245,8 +245,8 @@ namespace SystemOut.MagicPiMirror
         private async Task RefreshWeatherData()
         {
             var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
-            //var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
-            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
+            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+            //var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
 
             if (weatherData == null)
             {
