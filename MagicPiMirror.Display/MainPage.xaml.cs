@@ -113,18 +113,6 @@ namespace SystemOut.MagicPiMirror
 
             await RunOnDispatch(() =>
             {
-                //const string calendarPanelName = "CalendarPanel";
-                //var element = MainGrid.Children
-                //    .OfType<FrameworkElement>()
-                //    .FirstOrDefault(e => e.Name == calendarPanelName);
-                //if (element != null)
-                //    MainGrid.Children.Remove(element);
-
-                //var calendarDayStack = new StackPanel
-                //{
-                //    Name = calendarPanelName
-                //};
-
                 for (var i = 0; i < days.Count; i++)
                 {
                     var currentDay = DateTime.Today.AddDays(i);
@@ -136,7 +124,6 @@ namespace SystemOut.MagicPiMirror
                     }
                     else
                     {
-                        var appointmentStyle = (Style)Resources["SmallTextStyle"];
                         var heading = (TextBlock)FindName($"Day{i}Txb");
                         if (heading == null)
                         {
@@ -156,11 +143,6 @@ namespace SystemOut.MagicPiMirror
                         else
                         {
                             daySp.Children.Clear();
-                            //var element = MainGrid.Children
-                            //    .OfType<FrameworkElement>()
-                            //    .FirstOrDefault(e => e.Name == calendarPanelName);
-                            //if (element != null)
-                            //    MainGrid.Children.Remove(element);
                             foreach (var appointmentGrouping in appointmentsForCurrentDay
                                 .GroupBy(a => a.StartTime.ToLocalTime().ToString("HH", new CultureInfo("da-dk")))
                                 .OrderBy(ag => ag.Key))
@@ -189,50 +171,6 @@ namespace SystemOut.MagicPiMirror
                         }
                     }
                 }
-
-                //var daysInOrder = days.OrderBy(d => d.Key);
-                //var counter = 1;
-                //foreach (var daysAndAppointments in daysInOrder)
-                //{
-                //    var day = daysAndAppointments.Key.DayOfWeek.ToString().ToLower();
-                //    if (daysAndAppointments.Key.DayOfYear == DateTime.Now.DayOfYear)
-                //    {
-                //        // Today is treated special - we show todays schedule in the upper left side of the screen
-                //        day = "today";
-                //    }
-                //    else if (daysAndAppointments.Key.DayOfYear == DateTime.Now.DayOfYear + 1)
-                //    {
-                //        day = "tomorrow";
-                //        Day1Txb.Text = day;
-                //    }
-                //    else
-                //    {
-
-                //    }
-
-                //    var headingLbl = new TextBlock
-                //    {
-                //        FontSize = 16,
-                //        Text = day
-                //    };
-                //    calendarDayStack.Children.Add(headingLbl);
-                //    foreach (var appointment in daysAndAppointments.Value)
-                //    {
-                //        var entry = new TextBlock
-                //        {
-                //            TextTrimming = TextTrimming.WordEllipsis,
-                //            FontSize = 24,
-                //            Text =
-                //                $"{appointment.StartTime.ToLocalTime().ToString("t", new CultureInfo("da-dk"))} {appointment.Subject}"
-                //        };
-                //        calendarDayStack.Children.Add(entry);
-                //    }
-                //    counter++;
-                //}
-                //Grid.SetColumn(calendarDayStack, 0);
-                //Grid.SetRow(calendarDayStack, 1);
-                //Grid.SetRowSpan(calendarDayStack, 2);
-                //MainGrid.Children.Add(calendarDayStack);
             });
         }
 
