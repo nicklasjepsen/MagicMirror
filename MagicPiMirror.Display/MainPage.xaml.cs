@@ -50,7 +50,7 @@ namespace SystemOut.MagicPiMirror
 
             // Toggle background pic on/off
             //ParentGrid.Background = new SolidColorBrush(Colors.Black);
-            ParentGrid.Background = new ImageBrush {ImageSource = (ImageSource) Resources["BackgroundImg.jpg"]};
+            ParentGrid.Background = new ImageBrush {ImageSource = (ImageSource) Resources["BackgroundImg"] };
 
             // Set all design time text entries to nothing
             TemperatureTxb.Text = string.Empty;
