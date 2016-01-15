@@ -9,9 +9,11 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using SystemOut.WeatherApi.Core;
 using Windows.ApplicationModel.Background;
+using Windows.ApplicationModel.Resources;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Globalization;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.Threading;
@@ -27,6 +29,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using DayOfWeek = System.DayOfWeek;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -47,7 +50,7 @@ namespace SystemOut.MagicPiMirror
         public MainPage()
         {
             InitializeComponent();
-
+            ApplicationLanguages.PrimaryLanguageOverride = "da-DK";
             // Toggle background pic on/off
 #if ARM
             ParentGrid.Background = new ImageBrush
@@ -58,16 +61,15 @@ namespace SystemOut.MagicPiMirror
 #else
             ParentGrid.Background = new SolidColorBrush(Colors.Black);
 #endif
-
             // Set all design time text entries to nothing
             TemperatureTxb.Text = string.Empty;
             WeatherIcon.Source = null;
             WeatherDescirptionTxb.Text = string.Empty;
-            LocationTxb.Text = "Loading weather data...";
+            LocationTxb.Text = Strings.LoadingWeatherData;
 
             SpecialNote.Text = string.Empty;
 
-            Day0Txb.Text = "Loading calendar events...";
+            Day0Txb.Text = Strings.LoadingCalendarEvents;
             Day0Sp.Children.Clear();
             Day1Sp.Children.Clear();
             Day1Txb.Text = string.Empty;
@@ -156,9 +158,9 @@ namespace SystemOut.MagicPiMirror
                     else
                     {
                         if (currentDay.Date == DateTime.Today)
-                            heading.Text = "today's agenda";
+                            heading.Text = Strings.TodaysAgendaHeading;
                         else if (currentDay.Date == DateTime.Today.AddDays(1))
-                            heading.Text = "tomorrow";
+                            heading.Text = Strings.TomorrowHeading;
                         else
                             heading.Text = GetDanishDayOfWeek(currentDay.DayOfWeek).ToLower();
                     }
@@ -252,7 +254,7 @@ namespace SystemOut.MagicPiMirror
             {
                 try
                 {
-                    var messageDialog = new MessageDialog("Unable to connect to the Weather Service.", "Error");
+                    var messageDialog = new MessageDialog(Strings.UnableToConnectToWeatherService, Strings.Error);
                     await messageDialog.ShowAsync();
                 }
                 // Windows 10 Core do not support message dialogs (I think, this is thrown on Windows 10 Core)
@@ -261,7 +263,7 @@ namespace SystemOut.MagicPiMirror
                     await RunOnDispatch(() =>
                     {
                         WeatherIcon.Source = null;
-                        LocationTxb.Text = "Unable to get weather information.";
+                        LocationTxb.Text = Strings.UnableToGetWeatherInformation;
                         TemperatureTxb.Text = "?";
                         WeatherDescirptionTxb.Text = string.Empty;
                     });

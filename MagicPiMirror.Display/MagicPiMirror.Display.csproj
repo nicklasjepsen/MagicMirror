@@ -90,6 +90,8 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <PRIResource Include="Assets\Strings\en-US\Resources.resw" />
+    <PRIResource Include="Assets\Strings\da-DK\Resources.resw" />
     <None Include="MagicPiMirror.Display_TemporaryKey.pfx" />
     <None Include="project.json" />
   </ItemGroup>
@@ -105,6 +107,7 @@
     </Compile>
     <Compile Include="MirrorWebServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.cs" />
     <Compile Include="SpecialDayCalendar.cs" />
     <Compile Include="KeyNames.cs" />
   </ItemGroup>
