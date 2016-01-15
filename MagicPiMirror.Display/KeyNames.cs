@@ -20,7 +20,8 @@ namespace SystemOut.MagicPiMirror
             WeatherCityGeoCoordinates = nameof(WeatherCityGeoCoordinates),
             OpenWeatherMapApiKey = nameof(OpenWeatherMapApiKey),
             CalendarServiceUrl = nameof(CalendarServiceUrl),
-            CalendarIdentifiers = nameof(CalendarIdentifiers);
+            CalendarIdentifiers = nameof(CalendarIdentifiers),
+            Language = nameof(Language);
 
     }
 }

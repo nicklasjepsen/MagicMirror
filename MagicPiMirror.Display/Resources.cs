@@ -19,6 +19,11 @@ namespace SystemOut.MagicPiMirror
         public static string Error => ResourceLoader.GetString(nameof(Error));
         public static string UnableToConnectToWeatherService => ResourceLoader.GetString(nameof(UnableToConnectToWeatherService));
         public static string UnableToGetWeatherInformation => ResourceLoader.GetString(nameof(UnableToGetWeatherInformation));
+        public static string DateFormatString => ResourceLoader.GetString(nameof(DateFormatString));
+        public static string ClockHourFormatString => ResourceLoader.GetString(nameof(ClockHourFormatString));
+        public static string ClockMinFormatString => ResourceLoader.GetString(nameof(ClockMinFormatString));
+        public static string CalendarHourGroupByFormatString => ResourceLoader.GetString(nameof(CalendarHourGroupByFormatString));
+        public static string AppTitle => ResourceLoader.GetString(nameof(AppTitle));
 
         
     }

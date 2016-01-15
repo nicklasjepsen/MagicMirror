@@ -20,6 +20,7 @@ using Windows.System.Threading;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -50,7 +51,7 @@ namespace SystemOut.MagicPiMirror
         public MainPage()
         {
             InitializeComponent();
-            ApplicationLanguages.PrimaryLanguageOverride = "da-DK";
+
             // Toggle background pic on/off
 #if ARM
             ParentGrid.Background = new ImageBrush
@@ -94,6 +95,9 @@ namespace SystemOut.MagicPiMirror
             // Key3Array [value3,value4]
             await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("DefaultSettings.txt"));
 #endif
+            //ApplicationLanguages.PrimaryLanguageOverride = "da-DK";
+            ApplicationLanguages.PrimaryLanguageOverride = ApplicationDataController.GetValue(KeyNames.Language, string.Empty);
+
             await RefreshUiControls();
             StartClockBlinky();
             StartClock();
@@ -162,7 +166,7 @@ namespace SystemOut.MagicPiMirror
                         else if (currentDay.Date == DateTime.Today.AddDays(1))
                             heading.Text = Strings.TomorrowHeading;
                         else
-                            heading.Text = GetDanishDayOfWeek(currentDay.DayOfWeek).ToLower();
+                            heading.Text = GetDayOfWeek(currentDay.DayOfWeek).ToLower();
                     }
 
                     // Set appointments
@@ -175,15 +179,18 @@ namespace SystemOut.MagicPiMirror
                     {
                         daySp.Children.Clear();
                         foreach (var appointmentGrouping in appointmentsForCurrentDay
-                            .GroupBy(a => a.StartTime.ToLocalTime().ToString("HH", new CultureInfo("da-dk")))
+                            .GroupBy(a => a.StartTime.ToLocalTime().ToString(Strings.CalendarHourGroupByFormatString))
                             .OrderBy(ag => ag.Key))
                         {
                             // Group by hour
                             var hourSp = new StackPanel();
+                            var hourHeadning = appointmentGrouping.Key;
+                            if (hourHeadning.Length < 3)
+                                hourHeadning = hourHeadning + ":00";
                             hourSp.Children.Add(new TextBlock
                             {
                                 Style = appointmentHourStyle,
-                                Text = appointmentGrouping.Key + ":00",
+                                Text = hourHeadning,
                             });
 
                             foreach (var appointment in appointmentGrouping)
@@ -247,8 +254,8 @@ namespace SystemOut.MagicPiMirror
         private async Task RefreshWeatherData()
         {
             var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
-            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
-            //var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
+            //var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
 
             if (weatherData == null)
             {
@@ -386,40 +393,17 @@ namespace SystemOut.MagicPiMirror
         {
             await RunOnDispatch(() =>
             {
-                DayTxt.Text = GetDanishDayOfWeek();
-                DateTxb.Text = DateTime.Now.ToString("d. MMMM yyyy", new CultureInfo("da-dk"));
-                ClockHoursLabel.Text = DateTime.Now.ToString("HH");
-                ClockMinutesLabel.Text = DateTime.Now.ToString("mm");
+                DayTxt.Text = GetDayOfWeek(DateTime.Today.DayOfWeek);
+                DateTxb.Text = DateTime.Now.ToString(Strings.DateFormatString);
+                ClockHoursLabel.Text = DateTime.Now.ToString(Strings.ClockHourFormatString);
+                ClockMinutesLabel.Text = DateTime.Now.ToString(Strings.ClockMinFormatString);
             });
         }
 
-        private static string GetDanishDayOfWeek()
-        {
-            return GetDanishDayOfWeek(DateTime.Today.DayOfWeek);
-        }
 
-        private static string GetDanishDayOfWeek(DayOfWeek dayOfWeek)
+        private static string GetDayOfWeek(DayOfWeek dayOfWeek)
         {
-            // TODO: Add localization support
-            switch (dayOfWeek)
-            {
-                case DayOfWeek.Friday:
-                    return "Fredag";
-                case DayOfWeek.Monday:
-                    return "Mandag";
-                case DayOfWeek.Saturday:
-                    return "Lørdag";
-                case DayOfWeek.Sunday:
-                    return "Søndag";
-                case DayOfWeek.Thursday:
-                    return "Torsdag";
-                case DayOfWeek.Tuesday:
-                    return "Tirsdag";
-                case DayOfWeek.Wednesday:
-                    return "Onsdag";
-                default:
-                    return "Pludselig var der to mandage på en uge...";
-            }
+            return DateTimeFormatInfo.CurrentInfo.GetDayName(dayOfWeek);
         }
     }
 }
