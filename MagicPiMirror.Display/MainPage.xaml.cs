@@ -113,6 +113,8 @@ namespace SystemOut.MagicPiMirror
 
             await RunOnDispatch(() =>
             {
+                var appointmentHourStyle = (Style) Resources["AppointmentHourStyle"];
+                var appointmentEntryStyle = (Style) Resources["AppointmentEntryStyle"];
                 for (var i = 0; i < days.Count; i++)
                 {
                     var currentDay = DateTime.Today.AddDays(i);
@@ -151,7 +153,7 @@ namespace SystemOut.MagicPiMirror
                                 var hourSp = new StackPanel();
                                 hourSp.Children.Add(new TextBlock
                                 {
-                                    Style = (Style)Resources["AppointmentHourStyle"],
+                                    Style = appointmentHourStyle,
                                     Text = appointmentGrouping.Key + ":00",
                                 });
 
@@ -160,7 +162,7 @@ namespace SystemOut.MagicPiMirror
                                     var entry = new TextBlock
                                     {
                                         TextTrimming = TextTrimming.WordEllipsis,
-                                        Style = (Style)Resources["AppointmentEntryStyle"],
+                                        Style = appointmentEntryStyle,
                                         Text =appointment.Subject
                                     };
                                     hourSp.Children.Add(entry);
