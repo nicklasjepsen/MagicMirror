@@ -6,7 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="Page_Loaded">
+    Loaded="Page_Loaded"
+    Background="Black">
     <Page.Resources>
         <BitmapImage x:Key="BrokenCloudsDay" UriSource="Assets/Weather/broken_clouds_d.png"/>
         <BitmapImage x:Key="BrokenCloudsNight" UriSource="Assets/Weather/broken_clouds_n.png"/>
@@ -36,17 +37,30 @@
         <Style x:Key="SmallTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}">
             <Setter Property="FontSize" Value="24" />
         </Style>
+        <Style x:Key="ExtraSmallTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style x:Key="CalendarHeadingStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}">
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontWeight" Value="Thin" />
+        </Style>
+        <Style x:Key="AppointmentEntryStyle" TargetType="TextBlock" BasedOn="{StaticResource CalendarHeadingStyle}">
+            <Setter Property="Margin" Value="7,0,0,0" />
+        </Style>
+        <Style x:Key="AppointmentHourStyle" TargetType="TextBlock" BasedOn="{StaticResource ExtraSmallTextStyle}">
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
     </Page.Resources>
-    <Grid Name="MainGrid" Background="Black" Margin="20">
+    <Grid Name="MainGrid" Background="Black" Margin="20,0,20,20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!--Weather Grid-->
@@ -73,13 +87,13 @@
         </StackPanel>
 
         <!--SpecialNote-->
-        <TextBlock Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Name="SpecialNote" TextAlignment="Center" Text="SpecialNote" FontSize="60"/>
+        <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="3" Name="SpecialNote" VerticalAlignment="Center" TextAlignment="Center" Text="SpecialNote" FontSize="60"/>
 
         <!--Calendar Grid-->
         <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -89,15 +103,22 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Name="Day1Txb" Style="{StaticResource MediumTextStyle}">Tomorrow</TextBlock>
-            <TextBlock Grid.Column="1" Grid.Row="0" Name="Day2Txb" Style="{StaticResource MediumTextStyle}">Wednesday</TextBlock>
-            <TextBlock Grid.Column="2" Grid.Row="0" Name="Day3Txb" Style="{StaticResource MediumTextStyle}">Thursday</TextBlock>
-            <TextBlock Grid.Column="3" Grid.Row="0" Name="Day4Txb" Style="{StaticResource MediumTextStyle}">Friday</TextBlock>
-            <TextBlock Grid.Column="4" Grid.Row="0" Name="Day5Txb" Style="{StaticResource MediumTextStyle}">Saturday</TextBlock>
-            <TextBlock Grid.Column="5" Grid.Row="0" Name="Day6Txb" Style="{StaticResource MediumTextStyle}">Sunday</TextBlock>
+            <TextBlock Grid.Column="0" Grid.Row="0" Name="Day1Txb" Style="{StaticResource CalendarHeadingStyle}">Tomorrow</TextBlock>
+            <TextBlock Grid.Column="1" Grid.Row="0" Name="Day2Txb" Style="{StaticResource CalendarHeadingStyle}">Wednesday</TextBlock>
+            <TextBlock Grid.Column="2" Grid.Row="0" Name="Day3Txb" Style="{StaticResource CalendarHeadingStyle}">Thursday</TextBlock>
+            <TextBlock Grid.Column="3" Grid.Row="0" Name="Day4Txb" Style="{StaticResource CalendarHeadingStyle}">Friday</TextBlock>
+            <TextBlock Grid.Column="4" Grid.Row="0" Name="Day5Txb" Style="{StaticResource CalendarHeadingStyle}">Saturday</TextBlock>
+            <TextBlock Grid.Column="5" Grid.Row="0" Name="Day6Txb" Style="{StaticResource CalendarHeadingStyle}">Sunday</TextBlock>
 
             <StackPanel Grid.Column="0" Grid.Row="1" Name="Day1Sp" Orientation="Vertical">
-
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Style="{StaticResource AppointmentHourStyle}">09:00</TextBlock>
+                    <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Style="{StaticResource ExtraSmallTextStyle}">19:00</TextBlock>
+                    <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
+                </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Grid.Row="1" Name="Day2Sp" Orientation="Vertical">
 

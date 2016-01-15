@@ -22,7 +22,7 @@ namespace SystemOut.MagicPiMirror
             try
             {
                 var webClient = new HttpClient();
-                var json = await webClient.GetStringAsync(url + id);
+                var json = await webClient.GetStringAsync($"{url}id={id}&days=7");
                 return JsonConvert.DeserializeObject<CalendarModel>(json);
             }
             catch (HttpRequestException)

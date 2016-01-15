@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -86,7 +87,18 @@ namespace SystemOut.MagicPiMirror
                 allAppointments.AddRange(calendar.Appointments);
             }
 
-            var days = new Dictionary<DateTime, List<Appointment>>();
+            // We are displaying appointments for the next 7 days.
+            var days = new Dictionary<DateTime, List<Appointment>>
+            {
+                {DateTime.Today, new List<Appointment>()},
+                {DateTime.Today.AddDays(1), new List<Appointment>()},
+                {DateTime.Today.AddDays(2), new List<Appointment>()},
+                {DateTime.Today.AddDays(3), new List<Appointment>()},
+                {DateTime.Today.AddDays(4), new List<Appointment>()},
+                {DateTime.Today.AddDays(5), new List<Appointment>()},
+                {DateTime.Today.AddDays(6), new List<Appointment>()},
+            };
+
             foreach (var appointment in allAppointments)
             {
                 if (days.ContainsKey(appointment.StartTime.Date))
@@ -95,54 +107,132 @@ namespace SystemOut.MagicPiMirror
                 }
                 else
                 {
-                    days.Add(appointment.StartTime.Date, new List<Appointment> { appointment });
+                    Debug.WriteLine("Appointment occurring on day that we can't display. Appointment StartDate=" + appointment.StartTime);
                 }
             }
 
             await RunOnDispatch(() =>
             {
-                const string calendarPanelName = "CalendarPanel";
-                var element = MainGrid.Children
-                    .OfType<FrameworkElement>()
-                    .FirstOrDefault(e => e.Name == calendarPanelName);
-                if (element != null)
-                    MainGrid.Children.Remove(element);
+                //const string calendarPanelName = "CalendarPanel";
+                //var element = MainGrid.Children
+                //    .OfType<FrameworkElement>()
+                //    .FirstOrDefault(e => e.Name == calendarPanelName);
+                //if (element != null)
+                //    MainGrid.Children.Remove(element);
 
-                var calendarDayStack = new StackPanel
-                {
-                    Name = calendarPanelName
-                };
-                var ordered = days.OrderBy(d => d.Key);
-                foreach (var keyValuePair in ordered)
-                {
-                    var day = keyValuePair.Key.DayOfWeek.ToString().ToLower();
-                    if (keyValuePair.Key.DayOfYear == DateTime.Now.DayOfYear)
-                        day = "today";
-                    else if (keyValuePair.Key.DayOfYear == DateTime.Now.DayOfYear + 1)
-                        day = "tomorrow";
+                //var calendarDayStack = new StackPanel
+                //{
+                //    Name = calendarPanelName
+                //};
 
-                    var headingLbl = new TextBlock
+                for (var i = 0; i < days.Count; i++)
+                {
+                    var currentDay = DateTime.Today.AddDays(i);
+                    var appointmentsForCurrentDay = days[currentDay];
+                    if (i == 0)
                     {
-                        FontSize = 16,
-                        Text = day
-                    };
-                    calendarDayStack.Children.Add(headingLbl);
-                    foreach (var appointment in keyValuePair.Value)
+                        // Today is treated special - we show todays schedule in the upper left side of the screen
+
+                    }
+                    else
                     {
-                        var entry = new TextBlock
+                        var appointmentStyle = (Style)Resources["SmallTextStyle"];
+                        var heading = (TextBlock)FindName($"Day{i}Txb");
+                        if (heading == null)
                         {
-                            TextTrimming = TextTrimming.WordEllipsis,
-                            FontSize = 24,
-                            Text =
-                                $"{appointment.StartTime.ToLocalTime().ToString("t", new CultureInfo("da-dk"))} {appointment.Subject}"
-                        };
-                        calendarDayStack.Children.Add(entry);
+                            Debug.WriteLine("Unable to find the heading textblock for the date " + currentDay);
+                        }
+                        else
+                        {
+                            heading.Text = currentDay.DayOfWeek.ToString().ToLower();
+                        }
+
+                        // Set appointments
+                        var daySp = (StackPanel)FindName($"Day{i}Sp");
+                        if (daySp == null)
+                        {
+                            Debug.WriteLine("Unable to find the calendar stack panel for the date " + currentDay);
+                        }
+                        else
+                        {
+                            daySp.Children.Clear();
+                            //var element = MainGrid.Children
+                            //    .OfType<FrameworkElement>()
+                            //    .FirstOrDefault(e => e.Name == calendarPanelName);
+                            //if (element != null)
+                            //    MainGrid.Children.Remove(element);
+                            foreach (var appointmentGrouping in appointmentsForCurrentDay
+                                .GroupBy(a => a.StartTime.ToLocalTime().ToString("HH", new CultureInfo("da-dk")))
+                                .OrderBy(ag => ag.Key))
+                            {
+                                // Group by hour
+                                var hourSp = new StackPanel();
+                                hourSp.Children.Add(new TextBlock
+                                {
+                                    Style = (Style)Resources["AppointmentHourStyle"],
+                                    Text = appointmentGrouping.Key + ":00",
+                                });
+
+                                foreach (var appointment in appointmentGrouping)
+                                {
+                                    var entry = new TextBlock
+                                    {
+                                        TextTrimming = TextTrimming.WordEllipsis,
+                                        Style = (Style)Resources["AppointmentEntryStyle"],
+                                        Text =appointment.Subject
+                                    };
+                                    hourSp.Children.Add(entry);
+                                }
+
+                                daySp.Children.Add(hourSp);
+                            }
+                        }
                     }
                 }
-                Grid.SetColumn(calendarDayStack, 0);
-                Grid.SetRow(calendarDayStack, 1);
-                Grid.SetRowSpan(calendarDayStack, 2);
-                MainGrid.Children.Add(calendarDayStack);
+
+                //var daysInOrder = days.OrderBy(d => d.Key);
+                //var counter = 1;
+                //foreach (var daysAndAppointments in daysInOrder)
+                //{
+                //    var day = daysAndAppointments.Key.DayOfWeek.ToString().ToLower();
+                //    if (daysAndAppointments.Key.DayOfYear == DateTime.Now.DayOfYear)
+                //    {
+                //        // Today is treated special - we show todays schedule in the upper left side of the screen
+                //        day = "today";
+                //    }
+                //    else if (daysAndAppointments.Key.DayOfYear == DateTime.Now.DayOfYear + 1)
+                //    {
+                //        day = "tomorrow";
+                //        Day1Txb.Text = day;
+                //    }
+                //    else
+                //    {
+
+                //    }
+
+                //    var headingLbl = new TextBlock
+                //    {
+                //        FontSize = 16,
+                //        Text = day
+                //    };
+                //    calendarDayStack.Children.Add(headingLbl);
+                //    foreach (var appointment in daysAndAppointments.Value)
+                //    {
+                //        var entry = new TextBlock
+                //        {
+                //            TextTrimming = TextTrimming.WordEllipsis,
+                //            FontSize = 24,
+                //            Text =
+                //                $"{appointment.StartTime.ToLocalTime().ToString("t", new CultureInfo("da-dk"))} {appointment.Subject}"
+                //        };
+                //        calendarDayStack.Children.Add(entry);
+                //    }
+                //    counter++;
+                //}
+                //Grid.SetColumn(calendarDayStack, 0);
+                //Grid.SetRow(calendarDayStack, 1);
+                //Grid.SetRowSpan(calendarDayStack, 2);
+                //MainGrid.Children.Add(calendarDayStack);
             });
         }
 
