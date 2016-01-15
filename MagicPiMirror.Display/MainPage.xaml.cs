@@ -48,6 +48,28 @@ namespace SystemOut.MagicPiMirror
         {
             InitializeComponent();
 
+            // Toggle background pic on/off
+            //ParentGrid.Background = new SolidColorBrush(Colors.Black);
+            ParentGrid.Background = new ImageBrush {ImageSource = (ImageSource) Resources["BackgroundImg.jpg"]};
+
+            // Set all design time text entries to nothing
+            TemperatureTxb.Text = string.Empty;
+            WeatherIcon.Source = null;
+            WeatherDescirptionTxb.Text = string.Empty;
+            LocationTxb.Text = "Loading weather data...";
+
+            SpecialNote.Text = string.Empty;
+
+            Day0Txb.Text = "Loading calendar events...";
+            Day0Sp.Children.Clear();
+            Day1Sp.Children.Clear();
+            Day1Txb.Text = string.Empty;
+            Day2Txb.Text = string.Empty;
+            Day3Txb.Text = string.Empty;
+            Day4Txb.Text = string.Empty;
+            Day5Txb.Text = string.Empty;
+            Day6Txb.Text = string.Empty;
+
             var webserverEventProxy = WebServerEventProxy.Instance;
             webserverEventProxy.ValueChanged += WebserverEventProxy_ValueChanged;
             specialDayCalendar = new SpecialDayCalendar();
