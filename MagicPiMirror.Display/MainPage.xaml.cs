@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using SystemOut.WeatherApi.Core;
+using SystemOut.WeatherApi.Core.Models.OpenWeatherMap;
 using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Resources;
 using Windows.Data.Xml.Dom;
@@ -254,27 +255,20 @@ namespace SystemOut.MagicPiMirror
         private async Task RefreshWeatherData()
         {
             var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
-            //var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
-            var weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
+            WeatherData weatherData = null;
+            try
+            {
+                weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+                //weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
+            }
+            catch (WeatherServiceException weatherServiceException)
+            {
+                await ShowMessageDialogIfSupported(weatherServiceException.Message, "Error");
+            }
 
             if (weatherData == null)
             {
-                try
-                {
-                    var messageDialog = new MessageDialog(Strings.UnableToConnectToWeatherService, Strings.Error);
-                    await messageDialog.ShowAsync();
-                }
-                // Windows 10 Core do not support message dialogs (I think, this is thrown on Windows 10 Core)
-                catch (NotImplementedException)
-                {
-                    await RunOnDispatch(() =>
-                    {
-                        WeatherIcon.Source = null;
-                        LocationTxb.Text = Strings.UnableToGetWeatherInformation;
-                        TemperatureTxb.Text = "?";
-                        WeatherDescirptionTxb.Text = string.Empty;
-                    });
-                }
+                await ShowMessageDialogIfSupported(Strings.UnableToConnectToWeatherService, Strings.Error);
             }
             else
             {
@@ -319,6 +313,26 @@ namespace SystemOut.MagicPiMirror
             if (string.IsNullOrEmpty(resName))
                 return null;
             return (ImageSource)Resources[resName];
+        }
+
+        private async Task ShowMessageDialogIfSupported(string message, string title)
+        {
+            try
+            {
+                var messageDialog = new MessageDialog(message, title);
+                await messageDialog.ShowAsync();
+            }
+            // Windows 10 Core do not support message dialogs (I think, this is thrown on Windows 10 Core)
+            catch (NotImplementedException)
+            {
+                await RunOnDispatch(() =>
+                {
+                    WeatherIcon.Source = null;
+                    LocationTxb.Text = Strings.UnableToGetWeatherInformation;
+                    TemperatureTxb.Text = "?";
+                    WeatherDescirptionTxb.Text = string.Empty;
+                });
+            }
         }
 
         private async void WebserverEventProxy_ValueChanged(object sender, ValueChangedEventArg e)
