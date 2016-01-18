@@ -43,7 +43,7 @@ namespace SystemOut.MagicPiMirror
     public sealed partial class MainPage : Page
     {
         private const int ClockTickIntervalMs = 100;
-        private const int CalendarTickIntervalMs = 180000;
+        private const int CalendarTickIntervalMs = 30000;
         private const int WeatherTickIntervalMs = 30000;
         private const int ClockBlinkyTickInterval = 1000;
         private readonly SpecialDayCalendar specialDayCalendar;
@@ -258,8 +258,8 @@ namespace SystemOut.MagicPiMirror
             WeatherData weatherData = null;
             try
             {
-                weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
-                //weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
+                //weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+                weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
             }
             catch (WeatherServiceException weatherServiceException)
             {
