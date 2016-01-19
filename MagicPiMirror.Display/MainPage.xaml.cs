@@ -263,7 +263,8 @@ namespace SystemOut.MagicPiMirror
 
         private async Task RefreshWeatherData()
         {
-            var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty));
+
+            var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty), new CultureInfo(ApplicationLanguages.PrimaryLanguageOverride));
             WeatherData weatherData = null;
             try
             {

@@ -5,7 +5,6 @@
 [submodule "Externals/SystemOutWeatherApi"]
 	path = Externals/SystemOutWeatherApi
 	url = https://github.com/nicklasjepsen/SystemOutWeatherApi.git
-	ignore = dirty
 [submodule "Externals/SystemOutToolbox"]
 	path = Externals/SystemOutToolbox
 	url = https://github.com/nicklasjepsen/SystemOutToolbox.git
