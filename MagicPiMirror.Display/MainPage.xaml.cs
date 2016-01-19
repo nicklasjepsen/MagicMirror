@@ -31,6 +31,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using Microsoft.ApplicationInsights;
 using DayOfWeek = System.DayOfWeek;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -107,10 +108,15 @@ namespace SystemOut.MagicPiMirror
             await RefreshCalendar();
             StartWeatherRefresher();
             StartCalendarRefresher();
+
+            var tc = new TelemetryClient();
+            tc.TrackEvent("PageLoaded");
         }
 
         private async Task RefreshCalendar()
         {
+            var sw = Stopwatch.StartNew();
+            
             var calendarService = new CalendarService(
                 ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
 
@@ -209,7 +215,10 @@ namespace SystemOut.MagicPiMirror
                         }
                     }
                 }
+                var tc = new TelemetryClient();
+                tc.TrackMetric("Refresh Calendar Time Ms", sw.Elapsed.TotalMilliseconds);
             });
+
         }
 
         private async Task RefreshUiControls()

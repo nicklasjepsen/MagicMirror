@@ -92,6 +92,9 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <PRIResource Include="Assets\Strings\en-US\Resources.resw" />
     <PRIResource Include="Assets\Strings\da-DK\Resources.resw" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="MagicPiMirror.Display_TemporaryKey.pfx" />
     <None Include="project.json" />
   </ItemGroup>
