@@ -9,7 +9,6 @@ namespace SystemOut.MagicPiMirror
 {
     internal static class Strings
     {
-
         private static readonly ResourceLoader ResourceLoader = new ResourceLoader();
 
         public static string LoadingWeatherData => ResourceLoader.GetString(nameof(LoadingWeatherData));
@@ -25,6 +24,9 @@ namespace SystemOut.MagicPiMirror
         public static string CalendarHourGroupByFormatString => ResourceLoader.GetString(nameof(CalendarHourGroupByFormatString));
         public static string AppTitle => ResourceLoader.GetString(nameof(AppTitle));
 
-        
+        public static string Get(string key)
+        {
+            return ResourceLoader.GetString(key);
+        }
     }
 }

@@ -55,15 +55,15 @@ namespace SystemOut.MagicPiMirror
             InitializeComponent();
 
             // Toggle background pic on/off
-#if ARM
+//#if ARM
             ParentGrid.Background = new ImageBrush
             {
                 ImageSource = (ImageSource)Resources["BackgroundImg"],
                 Stretch = Stretch.None,
             };
-#else
-            ParentGrid.Background = new SolidColorBrush(Colors.Black);
-#endif
+            //#else
+            //            ParentGrid.Background = new SolidColorBrush(Colors.Black);
+            //#endif
             // Set all design time text entries to nothing
             TemperatureTxb.Text = string.Empty;
             WeatherIcon.Source = null;
@@ -116,7 +116,7 @@ namespace SystemOut.MagicPiMirror
         private async Task RefreshCalendar()
         {
             var sw = Stopwatch.StartNew();
-            
+
             var calendarService = new CalendarService(
                 ApplicationDataController.GetValue(KeyNames.CalendarServiceUrl, string.Empty));
 
@@ -263,33 +263,34 @@ namespace SystemOut.MagicPiMirror
 
         private async Task RefreshWeatherData()
         {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => 
+            {
+                var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty), new CultureInfo(ApplicationLanguages.PrimaryLanguageOverride));
+                WeatherData weatherData = null;
+                try
+                {
+                    //weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
+                    weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
+                }
+                catch (WeatherServiceException weatherServiceException)
+                {
+                    await ShowMessageDialogIfSupported(weatherServiceException.Message, "Error");
+                }
 
-            var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty), new CultureInfo(ApplicationLanguages.PrimaryLanguageOverride));
-            WeatherData weatherData = null;
-            try
-            {
-                //weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherZip, string.Empty), ApplicationDataController.GetValue(KeyNames.WeatherCountry, string.Empty));
-                weatherData = await weather.GetWeatherDataForCity(ApplicationDataController.GetValue(KeyNames.WeatherCityName, string.Empty));
-            }
-            catch (WeatherServiceException weatherServiceException)
-            {
-                await ShowMessageDialogIfSupported(weatherServiceException.Message, "Error");
-            }
-
-            if (weatherData == null)
-            {
-                await ShowMessageDialogIfSupported(Strings.UnableToConnectToWeatherService, Strings.Error);
-            }
-            else
-            {
-                await RunOnDispatch(() =>
+                if (weatherData == null)
+                {
+                    await ShowMessageDialogIfSupported(Strings.UnableToConnectToWeatherService, Strings.Error);
+                }
+                else
                 {
                     WeatherIcon.Source = GetImageSourceFromUri(weatherData.WeatherIconUri.AbsolutePath);
-                    LocationTxb.Text = weatherData.Location;
+                    LocationTxb.Text = Strings.Get(weatherData.Location);
+                    if (string.IsNullOrEmpty(LocationTxb.Text))
+                        LocationTxb.Text = weatherData.Location;
                     TemperatureTxb.Text = Math.Round(weatherData.Temp) + "°";
                     WeatherDescirptionTxb.Text = weatherData.Description;
-                });
-            }
+                }
+            });
         }
 
         private ImageSource GetImageSourceFromUri(string uri)

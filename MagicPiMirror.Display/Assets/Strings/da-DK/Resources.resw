@@ -129,6 +129,9 @@
   <data name="ClockMinFormatString" xml:space="preserve">
     <value>mm</value>
   </data>
+  <data name="Copenhagen" xml:space="preserve">
+    <value>København</value>
+  </data>
   <data name="DateFormatString" xml:space="preserve">
     <value>d. MMMM yyyy</value>
   </data>
