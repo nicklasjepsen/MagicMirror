@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.ApplicationInsights;
+using Newtonsoft.Json;
 using DayOfWeek = System.DayOfWeek;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -44,26 +46,28 @@ namespace SystemOut.MagicPiMirror
     public sealed partial class MainPage : Page
     {
         private const int ClockTickIntervalMs = 100;
+        private const int ClockSyncIntervalMs = 50000;
         private const int CalendarTickIntervalMs = 30000;
         private const int WeatherTickIntervalMs = 30000;
         private const int ClockBlinkyTickInterval = 1000;
         private readonly SpecialDayCalendar specialDayCalendar;
         private readonly MirrorWebServer webServer;
+        private TelemetryClient aiClient = new TelemetryClient();
 
         public MainPage()
         {
             InitializeComponent();
 
             // Toggle background pic on/off
-//#if ARM
+#if ARM
             ParentGrid.Background = new ImageBrush
             {
                 ImageSource = (ImageSource)Resources["BackgroundImg"],
                 Stretch = Stretch.None,
             };
-            //#else
-            //            ParentGrid.Background = new SolidColorBrush(Colors.Black);
-            //#endif
+            #else
+                        ParentGrid.Background = new SolidColorBrush(Colors.Black);
+            #endif
             // Set all design time text entries to nothing
             TemperatureTxb.Text = string.Empty;
             WeatherIcon.Source = null;
@@ -109,8 +113,8 @@ namespace SystemOut.MagicPiMirror
             StartWeatherRefresher();
             StartCalendarRefresher();
 
-            var tc = new TelemetryClient();
-            tc.TrackEvent("PageLoaded");
+            
+            aiClient.TrackEvent("PageLoaded");
         }
 
         private async Task RefreshCalendar()
@@ -132,13 +136,13 @@ namespace SystemOut.MagicPiMirror
             // We are displaying appointments for the next 7 days.
             var days = new Dictionary<DateTime, List<Appointment>>
             {
-                {DateTime.Today, new List<Appointment>()},
-                {DateTime.Today.AddDays(1), new List<Appointment>()},
-                {DateTime.Today.AddDays(2), new List<Appointment>()},
-                {DateTime.Today.AddDays(3), new List<Appointment>()},
-                {DateTime.Today.AddDays(4), new List<Appointment>()},
-                {DateTime.Today.AddDays(5), new List<Appointment>()},
-                {DateTime.Today.AddDays(6), new List<Appointment>()},
+                {TimeManager.Today, new List<Appointment>()},
+                {TimeManager.Today.AddDays(1), new List<Appointment>()},
+                {TimeManager.Today.AddDays(2), new List<Appointment>()},
+                {TimeManager.Today.AddDays(3), new List<Appointment>()},
+                {TimeManager.Today.AddDays(4), new List<Appointment>()},
+                {TimeManager.Today.AddDays(5), new List<Appointment>()},
+                {TimeManager.Today.AddDays(6), new List<Appointment>()},
             };
 
             foreach (var appointment in allAppointments)
@@ -159,7 +163,7 @@ namespace SystemOut.MagicPiMirror
                 var appointmentEntryStyle = (Style)Resources["AppointmentEntryStyle"];
                 for (var i = 0; i < days.Count; i++)
                 {
-                    var currentDay = DateTime.Today.AddDays(i);
+                    var currentDay = TimeManager.Today.AddDays(i);
                     var appointmentsForCurrentDay = days[currentDay];
                     var heading = (TextBlock)FindName($"Day{i}Txb");
                     if (heading == null)
@@ -168,9 +172,9 @@ namespace SystemOut.MagicPiMirror
                     }
                     else
                     {
-                        if (currentDay.Date == DateTime.Today)
+                        if (currentDay.Date == TimeManager.Today)
                             heading.Text = Strings.TodaysAgendaHeading;
-                        else if (currentDay.Date == DateTime.Today.AddDays(1))
+                        else if (currentDay.Date == TimeManager.Today.AddDays(1))
                             heading.Text = Strings.TomorrowHeading;
                         else
                             heading.Text = GetDayOfWeek(currentDay.DayOfWeek).ToLower();
@@ -233,7 +237,7 @@ namespace SystemOut.MagicPiMirror
         {
             await RunOnDispatch(() =>
             {
-                var specials = specialDayCalendar.GetSpecials(DateTime.Today).ToList();
+                var specials = specialDayCalendar.GetSpecials(TimeManager.Today).ToList();
                 if (specials.Any())
                 {
                     SpecialNote.Text = specials.First().DisplayText;
@@ -244,6 +248,11 @@ namespace SystemOut.MagicPiMirror
         private void StartClock()
         {
             ThreadPoolTimer.CreatePeriodicTimer(ClockTimer_Tick, TimeSpan.FromMilliseconds(ClockTickIntervalMs));
+        }
+
+        private void StartClockSync()
+        {
+            ThreadPoolTimer.CreatePeriodicTimer(ClockSync_Tick, TimeSpan.FromMilliseconds(ClockSyncIntervalMs));
         }
 
         private void StartCalendarRefresher()
@@ -386,6 +395,11 @@ namespace SystemOut.MagicPiMirror
             await SetTime();
         }
 
+        private async void ClockSync_Tick(ThreadPoolTimer timer)
+        {
+            await SyncTime();
+        }
+
         private async void WeatherTimer_Tick(ThreadPoolTimer timer)
         {
             await RefreshWeatherData();
@@ -418,11 +432,28 @@ namespace SystemOut.MagicPiMirror
         {
             await RunOnDispatch(() =>
             {
-                DayTxt.Text = GetDayOfWeek(DateTime.Today.DayOfWeek);
-                DateTxb.Text = DateTime.Now.ToString(Strings.DateFormatString);
-                ClockHoursLabel.Text = DateTime.Now.ToString(Strings.ClockHourFormatString);
-                ClockMinutesLabel.Text = DateTime.Now.ToString(Strings.ClockMinFormatString);
+                DayTxt.Text = GetDayOfWeek(TimeManager.Today.DayOfWeek);
+                DateTxb.Text = TimeManager.Now.ToString(Strings.DateFormatString);
+                ClockHoursLabel.Text = TimeManager.Now.ToString(Strings.ClockHourFormatString);
+                ClockMinutesLabel.Text = TimeManager.Now.ToString(Strings.ClockMinFormatString);
             });
+        }
+
+        private async Task SyncTime()
+        {
+            var http = new HttpClient();
+            http.DefaultRequestHeaders.Add("Accept", "text/json");
+            var timeStr = await http.GetStringAsync("http://appservices.systemout.net/services/api/time");
+            var dtUtc = JsonConvert.DeserializeObject<DateTime>(timeStr);
+
+            // If more than 1 min off, alert and 
+            var offTime = DateTime.UtcNow - dtUtc;
+            if (offTime > new TimeSpan(0, 1, 0) ||
+                offTime < new TimeSpan(0, -1, 0))
+            {
+                TimeManager.UpdateOffset(dtUtc);
+                aiClient.TrackTrace($"Warning: Mirror time is off by {offTime}.");
+            }
         }
 
 
