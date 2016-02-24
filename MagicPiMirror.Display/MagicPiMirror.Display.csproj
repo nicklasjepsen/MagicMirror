@@ -138,6 +138,7 @@
     <Content Include="Assets\Weather\snow_n.png" />
     <Content Include="Assets\Weather\thunderstorm_d.png" />
     <Content Include="Assets\Weather\thunderstorm_n.png" />
+    <Content Include="MagicPiMirrorSettings.txt" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

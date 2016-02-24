@@ -85,13 +85,11 @@ namespace SystemOut.MagicPiMirror
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-#if DEBUG
             // TODO: Insert path to own settings file where settings are stored in a key/value format like:
             // Key1 [value]
             // Key2 [value2]
             // Key3Array [value3,value4]
-            await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("DefaultSettings.txt"));
-#endif
+            await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("MagicPiMirrorSettings.txt"));
             //ApplicationLanguages.PrimaryLanguageOverride = "da-DK";
             ApplicationLanguages.PrimaryLanguageOverride = ApplicationDataController.GetValue(KeyNames.Language, string.Empty);
 
