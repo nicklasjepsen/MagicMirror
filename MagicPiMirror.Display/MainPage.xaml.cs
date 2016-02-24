@@ -58,16 +58,7 @@ namespace SystemOut.MagicPiMirror
         {
             InitializeComponent();
 
-            // Toggle background pic on/off
-#if ARM
-            ParentGrid.Background = new ImageBrush
-            {
-                ImageSource = (ImageSource)Resources["BackgroundImg"],
-                Stretch = Stretch.None,
-            };
-            #else
-                        ParentGrid.Background = new SolidColorBrush(Colors.Black);
-            #endif
+            ParentGrid.Background = new SolidColorBrush(Colors.Black);
             // Set all design time text entries to nothing
             TemperatureTxb.Text = string.Empty;
             WeatherIcon.Source = null;
@@ -113,7 +104,7 @@ namespace SystemOut.MagicPiMirror
             StartWeatherRefresher();
             StartCalendarRefresher();
 
-            
+
             aiClient.TrackEvent("PageLoaded");
         }
 
@@ -272,7 +263,7 @@ namespace SystemOut.MagicPiMirror
 
         private async Task RefreshWeatherData()
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => 
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 var weather = new WeatherService(ApplicationDataController.GetValue(KeyNames.OpenWeatherMapApiKey, string.Empty), new CultureInfo(ApplicationLanguages.PrimaryLanguageOverride));
                 WeatherData weatherData = null;
