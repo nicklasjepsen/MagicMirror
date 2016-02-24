@@ -168,12 +168,6 @@
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Externals\Restup\src\WebServer\WebServer.csproj">
-      <Project>{837b8ff3-ded6-4dc7-ad58-dbb0b3e44dd4}</Project>
-      <Name>WebServer</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
