@@ -113,6 +113,7 @@
     <Compile Include="Resources.cs" />
     <Compile Include="SpecialDayCalendar.cs" />
     <Compile Include="KeyNames.cs" />
+    <Compile Include="TimeManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
