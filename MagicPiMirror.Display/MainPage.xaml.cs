@@ -289,7 +289,7 @@ namespace SystemOut.MagicPiMirror
                     if (string.IsNullOrEmpty(LocationTxb.Text))
                         LocationTxb.Text = weatherData.Location;
                     TemperatureTxb.Text = Math.Round(weatherData.Temp) + "°";
-                    WeatherDescirptionTxb.Text = weatherData.Description;
+                    WeatherDescirptionTxb.Text = string.IsNullOrEmpty(weatherData.Description) ? string.Empty : weatherData.Description.ToLower();
                 }
             });
         }
