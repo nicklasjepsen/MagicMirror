@@ -144,7 +144,8 @@ namespace SystemOut.MagicPiMirror
                 }
                 else
                 {
-                    Debug.WriteLine("Appointment occurring on day that we can't display. Appointment StartDate=" + appointment.StartTime);
+                    LogError("Appointment occurring on day that we can't display. Appointment StartDate=" +
+                              appointment.StartTime);
                 }
             }
 
@@ -159,7 +160,7 @@ namespace SystemOut.MagicPiMirror
                     var heading = (TextBlock)FindName($"Day{i}Txb");
                     if (heading == null)
                     {
-                        Debug.WriteLine("Unable to find the heading textblock for the date " + currentDay);
+                        LogError("Unable to find the heading textblock for the date " + currentDay);
                     }
                     else
                     {
@@ -175,7 +176,7 @@ namespace SystemOut.MagicPiMirror
                     var daySp = (StackPanel)FindName($"Day{i}Sp");
                     if (daySp == null)
                     {
-                        Debug.WriteLine("Unable to find the calendar stack panel for the date " + currentDay);
+                        LogError("Unable to find the calendar stack panel for the date " + currentDay);
                     }
                     else
                     {
@@ -214,6 +215,12 @@ namespace SystemOut.MagicPiMirror
                 tc.TrackMetric("Refresh Calendar Time Ms", sw.Elapsed.TotalMilliseconds);
             });
 
+        }
+
+        private void LogError(string message)
+        {
+            aiClient.TrackException(new Exception(message));
+            Debug.WriteLine(message);
         }
 
         private async Task RefreshUiControls()
