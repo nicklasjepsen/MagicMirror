@@ -36,13 +36,8 @@ using Microsoft.ApplicationInsights;
 using Newtonsoft.Json;
 using DayOfWeek = System.DayOfWeek;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace SystemOut.MagicPiMirror
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         private const int ClockTickIntervalMs = 100;
@@ -52,7 +47,7 @@ namespace SystemOut.MagicPiMirror
         private const int ClockBlinkyTickInterval = 1000;
         private readonly SpecialDayCalendar specialDayCalendar;
         private readonly MirrorWebServer webServer;
-        private TelemetryClient aiClient = new TelemetryClient();
+        private readonly TelemetryClient aiClient = new TelemetryClient();
 
         public MainPage()
         {
@@ -103,7 +98,6 @@ namespace SystemOut.MagicPiMirror
             await RefreshCalendar();
             StartWeatherRefresher();
             StartCalendarRefresher();
-
 
             aiClient.TrackEvent("PageLoaded");
         }
