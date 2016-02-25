@@ -75,6 +75,7 @@ namespace SystemOut.MagicPiMirror
             ApplicationLanguages.PrimaryLanguageOverride = ApplicationDataController.GetValue(KeyNames.Language, string.Empty);
 
             await RefreshUiControls();
+            StartClockSync();
             StartClockBlinky();
             StartClock();
             await webServer.InitializeWebServer();
