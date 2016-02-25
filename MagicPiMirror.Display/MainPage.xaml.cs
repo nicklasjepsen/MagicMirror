@@ -145,13 +145,13 @@ namespace SystemOut.MagicPiMirror
 
             await RunOnDispatch(() =>
             {
-                var appointmentHourStyle = (Style)Resources["AppointmentHourStyle"];
-                var appointmentEntryStyle = (Style)Resources["AppointmentEntryStyle"];
                 for (var i = 0; i < days.Count; i++)
                 {
                     var currentDay = TimeManager.Today.AddDays(i);
                     var appointmentsForCurrentDay = days[currentDay];
                     var heading = (TextBlock)FindName($"Day{i}Txb");
+                    Style appointmentHourStyle = null;
+                    Style appointmentEntryStyle = null;
                     if (heading == null)
                     {
                         LogError("Unable to find the heading textblock for the date " + currentDay);
@@ -159,11 +159,23 @@ namespace SystemOut.MagicPiMirror
                     else
                     {
                         if (currentDay.Date == TimeManager.Today)
+                        {
                             heading.Text = Strings.TodaysAgendaHeading;
+                            appointmentHourStyle = (Style)Resources["SmallTextStyle"];
+                            appointmentEntryStyle = (Style)Resources["AppointmentEntryStyleMedium"];
+                        }
                         else if (currentDay.Date == TimeManager.Today.AddDays(1))
+                        {
+                            appointmentHourStyle = (Style) Resources["AppointmentHourStyle"];
+                            appointmentEntryStyle = (Style) Resources["AppointmentEntryStyle"];
                             heading.Text = Strings.TomorrowHeading;
+                        }
                         else
+                        {
+                            appointmentHourStyle = (Style)Resources["AppointmentHourStyle"];
+                            appointmentEntryStyle = (Style)Resources["AppointmentEntryStyle"];
                             heading.Text = GetDayOfWeek(currentDay.DayOfWeek).ToLower();
+                        }
                     }
 
                     // Set appointments
@@ -175,34 +187,45 @@ namespace SystemOut.MagicPiMirror
                     else
                     {
                         daySp.Children.Clear();
-                        foreach (var appointmentGrouping in appointmentsForCurrentDay
+                        var appointmentGrouping = appointmentsForCurrentDay
                             .GroupBy(a => a.StartTime.ToLocalTime().ToString(Strings.CalendarHourGroupByFormatString))
-                            .OrderBy(ag => ag.Key))
+                            .OrderBy(ag => ag.Key);
+                        if (!appointmentGrouping.Any())
                         {
-                            // Group by hour
-                            var hourSp = new StackPanel();
-                            var hourHeadning = appointmentGrouping.Key;
-                            if (hourHeadning.Length < 3)
-                                hourHeadning = hourHeadning + ":00";
-                            hourSp.Children.Add(new TextBlock
+                            daySp.Children.Add(new TextBlock
                             {
-                                Style = appointmentHourStyle,
-                                Text = hourHeadning,
+                                TextTrimming = TextTrimming.WordEllipsis,
+                                Style = appointmentEntryStyle,
+                                Text = Strings.NoAppointments
                             });
-
-                            foreach (var appointment in appointmentGrouping)
-                            {
-                                var entry = new TextBlock
-                                {
-                                    TextTrimming = TextTrimming.WordEllipsis,
-                                    Style = appointmentEntryStyle,
-                                    Text = appointment.Subject
-                                };
-                                hourSp.Children.Add(entry);
-                            }
-
-                            daySp.Children.Add(hourSp);
                         }
+                        else
+                            foreach (var ag in appointmentGrouping)
+                            {
+                                // Group by hour
+                                var hourSp = new StackPanel();
+                                var hourHeadning = ag.Key;
+                                if (hourHeadning.Length < 3)
+                                    hourHeadning = hourHeadning + ":00";
+                                hourSp.Children.Add(new TextBlock
+                                {
+                                    Style = appointmentHourStyle,
+                                    Text = hourHeadning,
+                                });
+
+                                foreach (var appointment in ag)
+                                {
+                                    var entry = new TextBlock
+                                    {
+                                        TextTrimming = TextTrimming.WordEllipsis,
+                                        Style = appointmentEntryStyle,
+                                        Text = appointment.Subject
+                                    };
+                                    hourSp.Children.Add(entry);
+                                }
+
+                                daySp.Children.Add(hourSp);
+                            }
                     }
                 }
                 var tc = new TelemetryClient();

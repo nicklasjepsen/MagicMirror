@@ -145,6 +145,9 @@
     <value>Loading weather data...</value>
     <comment>Init weather data</comment>
   </data>
+  <data name="NoAppointments" xml:space="preserve">
+    <value>No appointments :)</value>
+  </data>
   <data name="TodaysAgendaHeading" xml:space="preserve">
     <value>today's agenda</value>
   </data>

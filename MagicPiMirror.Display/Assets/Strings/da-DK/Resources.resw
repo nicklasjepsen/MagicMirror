@@ -145,6 +145,9 @@
     <value>Henter vejrudsigt...</value>
     <comment>Init weather data</comment>
   </data>
+  <data name="NoAppointments" xml:space="preserve">
+    <value>Ingen aftaler :)</value>
+  </data>
   <data name="TodaysAgendaHeading" xml:space="preserve">
     <value>i dag</value>
   </data>

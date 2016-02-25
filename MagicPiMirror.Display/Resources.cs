@@ -23,6 +23,7 @@ namespace SystemOut.MagicPiMirror
         public static string ClockMinFormatString => ResourceLoader.GetString(nameof(ClockMinFormatString));
         public static string CalendarHourGroupByFormatString => ResourceLoader.GetString(nameof(CalendarHourGroupByFormatString));
         public static string AppTitle => ResourceLoader.GetString(nameof(AppTitle));
+        public static string NoAppointments => ResourceLoader.GetString(nameof(NoAppointments));
 
         public static string Get(string key)
         {

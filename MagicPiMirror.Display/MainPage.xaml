@@ -58,6 +58,9 @@
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontWeight" Value="Thin" />
         </Style>
+        <Style x:Key="AppointmentEntryStyleMedium" TargetType="TextBlock" BasedOn="{StaticResource AppointmentEntryStyle}">
+            <Setter Property="FontSize" Value="24" />
+        </Style>
         <Style x:Key="AppointmentHourStyle" TargetType="TextBlock" BasedOn="{StaticResource ExtraSmallTextStyle}">
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
@@ -85,6 +88,30 @@
                     <TextBlock Name="WeatherDescirptionTxb" Style="{StaticResource MediumTextStyle}" Text="Unknown" />
                     <TextBlock Name="LocationTxb" Style="{StaticResource SmallTextStyle}" Text="Loading..."/>
                 </StackPanel>
+                
+                <!--Todays Agenda Grid-->
+                <Grid Grid.Column="0" Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Name="Day0Txb" Style="{StaticResource MediumTextStyle}">today's agenda</TextBlock>
+
+                    <StackPanel Grid.Column="0" Grid.Row="1" Name="Day0Sp" Orientation="Vertical">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Style="{StaticResource SmallTextStyle}">09:00</TextBlock>
+                            <TextBlock Style="{StaticResource AppointmentEntryStyleMedium}">Test</TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Style="{StaticResource SmallTextStyle}">19:00</TextBlock>
+                            <TextBlock Style="{StaticResource AppointmentEntryStyleMedium}">Test</TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+
+                </Grid>
             </StackPanel>
 
             <!--Date and time Grid-->
@@ -100,31 +127,7 @@
 
             <!--SpecialNote-->
             <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="3" Name="SpecialNote" Style="{StaticResource SpecialNoteStyle}" Text ="Special Note"/>
-
-            <!--Todays Agenda Grid-->
-            <Grid Grid.Column="0" Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Grid.Row="0" Name="Day0Txb" Style="{StaticResource CalendarHeadingStyle}">today's agenda</TextBlock>
-
-                <StackPanel Grid.Column="0" Grid.Row="1" Name="Day0Sp" Orientation="Vertical">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource AppointmentHourStyle}">09:00</TextBlock>
-                        <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ExtraSmallTextStyle}">19:00</TextBlock>
-                        <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
-                    </StackPanel>
-                </StackPanel>
-
-            </Grid>
-
+        
             <!--Calendar Grid-->
             <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
                 <Grid.RowDefinitions>
