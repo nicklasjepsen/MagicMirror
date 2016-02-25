@@ -89,7 +89,9 @@ namespace SystemOut.MagicPiMirror
             // Key1 [value]
             // Key2 [value2]
             // Key3Array [value3,value4]
-            await ApplicationDataController.LoadDefaultSettings(File.ReadAllLines("MagicPiMirrorSettings.txt"));
+            var settingsKeyVals =
+                await Task.Run(() => File.ReadAllLines("MagicPiMirrorSettings.txt"));
+            await ApplicationDataController.LoadDefaultSettings(settingsKeyVals);
             //ApplicationLanguages.PrimaryLanguageOverride = "da-DK";
             ApplicationLanguages.PrimaryLanguageOverride = ApplicationDataController.GetValue(KeyNames.Language, string.Empty);
 
