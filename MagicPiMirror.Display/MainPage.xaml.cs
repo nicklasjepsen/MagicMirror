@@ -75,7 +75,7 @@ namespace SystemOut.MagicPiMirror
             ApplicationLanguages.PrimaryLanguageOverride = ApplicationDataController.GetValue(KeyNames.Language, string.Empty);
 
             await RefreshUiControls();
-            StartClockSync();
+            // StartClockSync();
             StartClockBlinky();
             StartClock();
             await webServer.InitializeWebServer();
@@ -223,6 +223,19 @@ namespace SystemOut.MagicPiMirror
         {
             aiClient.TrackException(new Exception(message));
             Debug.WriteLine(message);
+        }
+
+        private void LogException(Exception e)
+        {
+            if (e == null)
+            {
+                LogError("Unable to log exception - exception is null.");
+            }
+            else
+            {
+                aiClient.TrackException(e);
+                Debug.WriteLine(e.Message);
+            }
         }
 
         private async Task RefreshUiControls()
@@ -441,9 +454,20 @@ namespace SystemOut.MagicPiMirror
 
         private async Task SyncTime()
         {
+            string timeStr;
             var http = new HttpClient();
             http.DefaultRequestHeaders.Add("Accept", "text/json");
-            var timeStr = await http.GetStringAsync("http://appservices.systemout.net/services/api/time");
+            try
+            {
+                timeStr = await http.GetStringAsync("http://appservices.systemout.net/services/api/time");
+            }
+            catch (HttpRequestException httpException)
+            {
+                LogException(httpException);
+
+                return;
+            }
+            
             var dtUtc = JsonConvert.DeserializeObject<DateTime>(timeStr);
 
             // If more than 1 min off, alert and 
