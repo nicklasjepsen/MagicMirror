@@ -30,8 +30,12 @@
             <Setter Property="Foreground" Value="White"/>
         </Style>
         <Style x:Key="LargeTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}">
-            <Setter Property="FontSize" Value="90" />
+            <Setter Property="FontSize" Value="70" />
             <Setter Property="FontWeight" Value="Thin" />
+        </Style>
+        <Style x:Key="GigaTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}">
+            <Setter Property="FontSize" Value="360" />
+            <Setter Property="FontWeight" Value="Normal" />
         </Style>
         <Style x:Key="MediumTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseStyle}">
             <Setter Property="FontSize" Value="35" />
@@ -65,7 +69,7 @@
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
     </Page.Resources>
-    <Grid Name="ParentGrid" Background="Black">
+    <!--<Grid Name="ParentGrid" Background="Black">
         <Grid Name="MainGrid" Margin="20,0,20,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
@@ -73,13 +77,14 @@
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            </Grid.RowDefinitions>-->
 
-            <!--Weather Grid-->
-            <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+    <!--Weather Grid-->
+    <!--<StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Margin="0,0,0,0" Name="TemperatureTxb" Style="{StaticResource LargeTextStyle}" VerticalAlignment="Top" >?°</TextBlock>
                     <Image Source="Assets/Weather/snow_d.png" Margin="10,0,0,15" Name="WeatherIcon" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="76" Height="76"/>
@@ -89,7 +94,9 @@
                     <TextBlock Name="LocationTxb" Style="{StaticResource SmallTextStyle}" Text="Loading..."/>
                 </StackPanel>
                 
-                <!--Todays Agenda Grid-->
+                -->
+    <!--Todays Agenda Grid-->
+    <!--
                 <Grid Grid.Column="0" Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
@@ -112,70 +119,26 @@
                     </StackPanel>
 
                 </Grid>
+            </StackPanel>-->
+
+    <!--Date and time Grid-->
+    <Grid Background="Black">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Grid.Row="0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="-80">
+                <TextBlock Name="ClockHoursLabel" TextAlignment="Right" Text="06" Style="{StaticResource GigaTextStyle}"/>
+                <TextBlock Name="ClockSeperatorLabel" Width="70" Margin="0,-30,0,0"  TextAlignment="Center" Text=":" Style="{StaticResource GigaTextStyle}"/>
+                <TextBlock Name="ClockMinutesLabel" TextAlignment="Right" Text="50" Style="{StaticResource GigaTextStyle}"/>
             </StackPanel>
+        </StackPanel>
+        <TextBlock Grid.Row="2" Name="DayTxt" TextAlignment="Center" Style="{StaticResource LargeTextStyle}" Text="Monday 9. January 2016" />
 
-            <!--Date and time Grid-->
-            <StackPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Name="ClockHoursLabel" TextAlignment="Right" Text="06" Style="{StaticResource LargeTextStyle}"/>
-                    <TextBlock Name="ClockSeperatorLabel" Width="25" TextAlignment="Center" Text=":" Style="{StaticResource LargeTextStyle}"/>
-                    <TextBlock Name="ClockMinutesLabel" TextAlignment="Right" Text="50" Style="{StaticResource LargeTextStyle}"/>
-                </StackPanel>
-                <TextBlock Name="DayTxt" TextAlignment="Right" Style="{StaticResource MediumTextStyle}" Text="DayTxt" />
-                <TextBlock Name="DateTxb" Style="{StaticResource SmallTextStyle}" TextAlignment="Right" Text="9. January 2016"/>
-            </StackPanel>
-
-            <!--SpecialNote-->
-            <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="3" Name="SpecialNote" Style="{StaticResource SpecialNoteStyle}" Text ="Special Note"/>
-        
-            <!--Calendar Grid-->
-            <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Grid.Row="0" Name="Day1Txb" Style="{StaticResource CalendarHeadingStyle}">tomorrow</TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="0" Name="Day2Txb" Style="{StaticResource CalendarHeadingStyle}">wednesday</TextBlock>
-                <TextBlock Grid.Column="2" Grid.Row="0" Name="Day3Txb" Style="{StaticResource CalendarHeadingStyle}">thursday</TextBlock>
-                <TextBlock Grid.Column="3" Grid.Row="0" Name="Day4Txb" Style="{StaticResource CalendarHeadingStyle}">friday</TextBlock>
-                <TextBlock Grid.Column="4" Grid.Row="0" Name="Day5Txb" Style="{StaticResource CalendarHeadingStyle}">saturday</TextBlock>
-                <TextBlock Grid.Column="5" Grid.Row="0" Name="Day6Txb" Style="{StaticResource CalendarHeadingStyle}">sunday</TextBlock>
-
-                <StackPanel Grid.Column="0" Grid.Row="1" Name="Day1Sp" Orientation="Vertical">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource AppointmentHourStyle}">09:00</TextBlock>
-                        <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ExtraSmallTextStyle}">19:00</TextBlock>
-                        <TextBlock Style="{StaticResource AppointmentEntryStyle}">Test</TextBlock>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Grid.Row="1" Name="Day2Sp" Orientation="Vertical">
-
-                </StackPanel>
-                <StackPanel Grid.Column="2" Grid.Row="1" Name="Day3Sp" Orientation="Vertical">
-
-                </StackPanel>
-                <StackPanel Grid.Column="3" Grid.Row="1" Name="Day4Sp" Orientation="Vertical">
-
-                </StackPanel>
-                <StackPanel Grid.Column="4" Grid.Row="1" Name="Day5Sp" Orientation="Vertical">
-
-                </StackPanel>
-                <StackPanel Grid.Column="5" Grid.Row="1" Name="Day6Sp" Orientation="Vertical">
-
-                </StackPanel>
-            </Grid>
-        </Grid>
     </Grid>
-    
+    <!--</Grid>
+    </Grid>-->
+
 </Page>
