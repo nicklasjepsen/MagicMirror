@@ -1,0 +1,2 @@
+MainPackage=E:\Dev\MagicMirror\MagicMirror\bin\x86\Debug\MagicMirror_1.2.4.0_x86_Debug.msix
+SymbolPackage=E:\Dev\MagicMirror\MagicMirror\obj\x86\Debug\Symbols\MagicMirror_1.2.4.0_x86_Debug.appxsym

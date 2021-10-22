@@ -1,0 +1,4 @@
+MainPackage=E:\Dev\MagicMirror\MagicMirror\bin\ARM\Debug\MagicMirror_1.0.0.0_ARM_Debug.msix
+SymbolPackage=E:\Dev\MagicMirror\MagicMirror\obj\ARM\Debug\Symbols\MagicMirror_1.0.0.0_ARM_Debug.appxsym
+ResourcePack=E:\Dev\MagicMirror\MagicMirror\bin\ARM\Debug\MagicMirror_1.0.0.0_language-da.msix
+ResourcePack=E:\Dev\MagicMirror\MagicMirror\bin\ARM\Debug\MagicMirror_1.0.0.0_scale-100.msix
