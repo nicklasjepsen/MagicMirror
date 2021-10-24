@@ -48,7 +48,7 @@ namespace MagicMirror
         {
             InitializeComponent();            
             _specialDayCalendar = new SpecialDayCalendar();
-            var settings = System.IO.File.ReadAllLines("MagicPiMirrorSettings.txt");
+            var settings = System.IO.File.ReadAllLines("MagicMirrorSettings.txt");
             ApplicationDataController.LoadDefaultSettings(settings, true);
             _clientId = ApplicationDataController.GetValue("MsGraphClientId", string.Empty);
             _calendarIdentifier = ApplicationDataController.GetValue("CalendarIdentifier", string.Empty);

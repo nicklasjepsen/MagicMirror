@@ -9,7 +9,7 @@
   <Identity
     Name="4679e2c5-4fb0-4b0e-94d2-2a6550f13896"
     Publisher="CN=nickl"
-    Version="1.2.4.0" />
+    Version="1.2.5.0" />
 
   <mp:PhoneIdentity PhoneProductId="4679e2c5-4fb0-4b0e-94d2-2a6550f13896" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
